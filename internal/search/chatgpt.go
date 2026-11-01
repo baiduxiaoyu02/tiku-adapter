@@ -17,6 +17,7 @@ type ChatGptClient struct {
 	APIKey      string // API Key
 	Model       string // 模型名称（如 glm-5.2）
 	VisionModel string // 图片题用的视觉模型（如 sensenova-6.8-flash-lite），为空则用 Model
+	APIFormat   string // API 协议格式：openai（默认）/ anthropic / responses
 }
 
 // getHTTPClient 获取HTTP客户端（含重试退避，429/5xx 自动重试）
@@ -159,7 +160,219 @@ func chatEndpoint(baseURL string) string {
 	return base + "/v1/chat/completions"
 }
 
-// SearchAnswer 调用 OpenAI 兼容 API 搜索答案（题库 fallback）
+// versionedEndpoint 按协议拼接端点：/v1 后缀可省略（anthropic: /v1/messages，responses: /v1/responses）。
+func versionedEndpoint(baseURL, path string) string {
+	base := strings.TrimRight(baseURL, "/")
+	if strings.HasSuffix(base, "/v1") {
+		return base + path
+	}
+	return base + "/v1" + path
+}
+
+// parseDataURL 解析 data URL（OCS 发送 base64 图片的形式）。
+// "data:image/png;base64,QAAA" → ("image/png", "QAAA", true)
+func parseDataURL(u string) (mediaType, data string, ok bool) {
+	const prefix = "data:"
+	if !strings.HasPrefix(u, prefix) {
+		return "", "", false
+	}
+	rest := u[len(prefix):]
+	semi := strings.Index(rest, ";")
+	comma := strings.Index(rest, ",")
+	if semi < 0 || comma < semi {
+		return "", "", false
+	}
+	mediaType = rest[:semi]
+	payload := rest[semi+1:]
+	if !strings.HasPrefix(payload, "base64,") {
+		return "", "", false
+	}
+	data = payload[len("base64,"):]
+	if mediaType == "" || data == "" {
+		return "", "", false
+	}
+	return mediaType, data, true
+}
+
+// askModel 按客户端 API 格式调用模型，返回剥离 think 标签后的纯文本。
+// 文字题 images 为空；图片题 images 为 URL（data URL 或 http URL）。
+func (in *ChatGptClient) askModel(modelName, prompt string, images []string) (string, error) {
+	switch in.APIFormat {
+	case "anthropic":
+		return in.callAnthropic(modelName, prompt, images)
+	case "responses":
+		return in.callResponses(modelName, prompt, images)
+	default:
+		return in.callOpenAI(modelName, prompt, images)
+	}
+}
+
+// TestConnect 以给定模型做一次真实连通调用（供供应商管理测试接口复用协议路径）。
+func (in *ChatGptClient) TestConnect(modelName string) (string, error) {
+	return in.askModel(modelName, "回复OK", nil)
+}
+
+// callOpenAI OpenAI Chat Completions 协议（/v1/chat/completions，Bearer 头）。
+func (in *ChatGptClient) callOpenAI(modelName, prompt string, images []string) (string, error) {
+	var reqContent interface{}
+	if len(images) > 0 {
+		parts := []interface{}{
+			map[string]string{"type": "text", "text": prompt},
+		}
+		for _, imgURL := range images {
+			parts = append(parts, map[string]interface{}{
+				"type":      "image_url",
+				"image_url": map[string]string{"url": imgURL},
+			})
+		}
+		reqContent = parts
+	} else {
+		reqContent = prompt
+	}
+	reqBody := chatRequest{
+		Model: modelName,
+		Messages: []chatMsg{
+			{Role: "user", Content: reqContent},
+		},
+		MaxTokens: 4096,
+	}
+	resp, err := in.getHTTPClient().R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Authorization", "Bearer "+in.APIKey).
+		SetBody(reqBody).
+		Post(chatEndpoint(in.BaseURL))
+	if err != nil || resp.StatusCode() != 200 {
+		return "", errors.ErrTargetServerError
+	}
+	var res chatResponse
+	if err = json.Unmarshal(resp.Body(), &res); err != nil {
+		return "", errors.ErrParserJSON
+	}
+	if len(res.Choices) == 0 {
+		return "", nil
+	}
+	return stripThinkTags(res.Choices[0].Message.Content), nil
+}
+
+// callAnthropic Anthropic Messages 协议（/v1/messages，x-api-key 头，max_tokens 必填）。
+func (in *ChatGptClient) callAnthropic(modelName, prompt string, images []string) (string, error) {
+	var content interface{}
+	if len(images) > 0 {
+		blocks := []interface{}{
+			map[string]string{"type": "text", "text": prompt},
+		}
+		for _, imgURL := range images {
+			if mediaType, data, ok := parseDataURL(imgURL); ok {
+				blocks = append(blocks, map[string]interface{}{
+					"type": "image",
+					"source": map[string]string{
+						"type": "base64", "media_type": mediaType, "data": data,
+					},
+				})
+			} else {
+				blocks = append(blocks, map[string]interface{}{
+					"type": "image",
+					"source": map[string]string{
+						"type": "url", "url": imgURL,
+					},
+				})
+			}
+		}
+		content = blocks
+	} else {
+		content = prompt
+	}
+	reqBody := map[string]interface{}{
+		"model":      modelName,
+		"max_tokens": 4096,
+		"messages": []map[string]interface{}{
+			{"role": "user", "content": content},
+		},
+	}
+	resp, err := in.getHTTPClient().R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("x-api-key", in.APIKey).
+		SetHeader("anthropic-version", "2023-06-01").
+		SetBody(reqBody).
+		Post(versionedEndpoint(in.BaseURL, "/messages"))
+	if err != nil || resp.StatusCode() != 200 {
+		return "", errors.ErrTargetServerError
+	}
+	var res struct {
+		Content []struct {
+			Type string `json:"type"`
+			Text string `json:"text"`
+		} `json:"content"`
+	}
+	if err = json.Unmarshal(resp.Body(), &res); err != nil {
+		return "", errors.ErrParserJSON
+	}
+	var sb strings.Builder
+	for _, b := range res.Content {
+		if b.Type == "text" {
+			sb.WriteString(b.Text)
+		}
+	}
+	return stripThinkTags(sb.String()), nil
+}
+
+// callResponses OpenAI Responses 协议（/v1/responses，Bearer 头，input 格式）。
+func (in *ChatGptClient) callResponses(modelName, prompt string, images []string) (string, error) {
+	var input interface{}
+	if len(images) > 0 {
+		parts := []interface{}{
+			map[string]string{"type": "input_text", "text": prompt},
+		}
+		for _, imgURL := range images {
+			parts = append(parts, map[string]interface{}{
+				"type":      "input_image",
+				"image_url": imgURL,
+			})
+		}
+		input = parts
+	} else {
+		input = prompt
+	}
+	reqBody := map[string]interface{}{
+		"model":             modelName,
+		"input":             input,
+		"max_output_tokens": 4096,
+	}
+	resp, err := in.getHTTPClient().R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Authorization", "Bearer "+in.APIKey).
+		SetBody(reqBody).
+		Post(versionedEndpoint(in.BaseURL, "/responses"))
+	if err != nil || resp.StatusCode() != 200 {
+		return "", errors.ErrTargetServerError
+	}
+	var res struct {
+		OutputText string `json:"output_text"`
+		Output     []struct {
+			Content []struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"content"`
+		} `json:"output"`
+	}
+	if err = json.Unmarshal(resp.Body(), &res); err != nil {
+		return "", errors.ErrParserJSON
+	}
+	if res.OutputText != "" {
+		return stripThinkTags(res.OutputText), nil
+	}
+	var sb strings.Builder
+	for _, o := range res.Output {
+		for _, b := range o.Content {
+			if b.Type == "output_text" {
+				sb.WriteString(b.Text)
+			}
+		}
+	}
+	return stripThinkTags(sb.String()), nil
+}
+
+// SearchAnswer 调用模型搜索答案（题库 fallback）
 func (in *ChatGptClient) SearchAnswer(req model.SearchRequest) (answer [][]string, err error) {
 	answer = make([][]string, 0)
 	if !in.Enable {
@@ -170,63 +383,22 @@ func (in *ChatGptClient) SearchAnswer(req model.SearchRequest) (answer [][]strin
 	if in.BaseURL == "" || in.APIKey == "" || in.Model == "" {
 		return answer, nil
 	}
-	baseURL := in.BaseURL
-	apiKey := in.APIKey
 	prompt := buildPrompt(req)
 
-	// 图片题：切换视觉模型 + OpenAI 多模态消息格式；文字题：常规模型 + 纯文本
-	var modelName string
-	var reqContent interface{}
-
-	if len(req.Images) > 0 && in.VisionModel != "" {
-		modelName = in.VisionModel
-		parts := []interface{}{
-			map[string]string{"type": "text", "text": prompt + "\n（此题包含图片，请结合图片内容作答）"},
+	// 图片题：切换视觉模型；文字题：常规模型
+	modelName := in.Model
+	images := req.Images
+	if len(images) > 0 {
+		if in.VisionModel != "" {
+			modelName = in.VisionModel
 		}
-		for _, imgURL := range req.Images {
-			parts = append(parts, map[string]interface{}{
-				"type":      "image_url",
-				"image_url": map[string]string{"url": imgURL},
-			})
-		}
-		reqContent = parts
-	} else {
-		modelName = in.Model
-		reqContent = prompt
+		prompt += "\n（此题包含图片，请结合图片内容作答）"
 	}
 
-	reqBody := chatRequest{
-		Model: modelName,
-		Messages: []chatMsg{
-			{Role: "user", Content: reqContent},
-		},
-		MaxTokens: 4096,
-	}
-
-	resp, err := in.getHTTPClient().R().
-		SetHeader("Content-Type", "application/json").
-		SetHeader("Authorization", "Bearer "+apiKey).
-		SetBody(reqBody).
-		Post(chatEndpoint(baseURL))
+	content, err := in.askModel(modelName, prompt, images)
 	if err != nil {
-		return answer, errors.ErrTargetServerError
+		return answer, err
 	}
-	// HTTP 状态码检查：401/403/429/5xx 等不应静默返回空答案
-	if resp.StatusCode() != 200 {
-		return answer, errors.ErrTargetServerError
-	}
-
-	var res chatResponse
-	err = json.Unmarshal(resp.Body(), &res)
-	if err != nil {
-		return answer, errors.ErrParserJSON
-	}
-
-	if len(res.Choices) == 0 {
-		return answer, nil
-	}
-
-	content := stripThinkTags(res.Choices[0].Message.Content)
 	content = strings.TrimSpace(content)
 	if content == "" {
 		return answer, nil

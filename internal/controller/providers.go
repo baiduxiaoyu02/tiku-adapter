@@ -1,24 +1,52 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/itihey/tikuAdapter/internal/search"
 	"github.com/itihey/tikuAdapter/pkg/logger"
 	"github.com/spf13/viper"
 )
 
 // Provider 单个模型供应商配置
 type Provider struct {
-	Name        string `yaml:"name" json:"name"`
-	BaseURL     string `yaml:"base_url" json:"base_url"`
-	APIKey      string `yaml:"api_key" json:"api_key"`
-	Model       string `yaml:"model" json:"model"`
-	VisionModel string `yaml:"vision_model" json:"vision_model"`
+	Name        string   `yaml:"name" json:"name"`
+	BaseURL     string   `yaml:"base_url" json:"base_url"`
+	APIFormat   string   `yaml:"api_format" json:"api_format"` // openai（默认）/ anthropic / responses
+	APIKey      string   `yaml:"api_key" json:"api_key"`
+	Models      []string `yaml:"models" json:"models"`   // 模型列表
+	Model       string   `yaml:"model" json:"model"`     // 文字搜题用模型（须在 Models 中）
+	VisionModel string   `yaml:"vision_model" json:"vision_model"` // 图片搜题用模型（可空）
+	Disabled    bool     `yaml:"disabled" json:"disabled"` // 停用标记（缺省 false=启用，兼容旧配置）
+}
+
+// validAPIFormats 允许的 API 格式
+var validAPIFormats = map[string]bool{"openai": true, "anthropic": true, "responses": true}
+
+// normalizeProvider 补齐缺省：格式默认 openai、模型列表并入 Model
+func normalizeProvider(p *Provider) {
+	if p.APIFormat == "" {
+		p.APIFormat = "openai"
+	}
+	if !validAPIFormats[p.APIFormat] {
+		p.APIFormat = "openai"
+	}
+	hasModel := false
+	for _, m := range p.Models {
+		if m == p.Model {
+			hasModel = true
+			break
+		}
+	}
+	if p.Model != "" && !hasModel {
+		p.Models = append([]string{p.Model}, p.Models...)
+	}
+	if p.Model == "" && len(p.Models) == 0 {
+		p.Disabled = true // 没有任何模型的供应商没有可用性
+	}
 }
 
 // providerResponse 列表响应（密钥掩码）
@@ -232,6 +260,7 @@ func ProvidersSave(c *gin.Context) {
 			return
 		}
 	}
+	normalizeProvider(&in)
 	replaced := false
 	for i := range list {
 		if list[i].Name == in.Name {
@@ -251,6 +280,7 @@ func ProvidersSave(c *gin.Context) {
 	viper.Set("ai.api_key", in.APIKey)
 	viper.Set("ai.model", in.Model)
 	viper.Set("ai.vision_model", in.VisionModel)
+	viper.Set("ai.api_format", in.APIFormat)
 	viper.Set("ai.active", in.Name)
 
 	if err := viper.WriteConfig(); err != nil {
@@ -275,10 +305,16 @@ func ProvidersSwitch(c *gin.Context) {
 	_ = viper.UnmarshalKey("providers", &list)
 	for _, p := range list {
 		if p.Name == in.Name {
+			normalizeProvider(&p)
+			if p.Disabled {
+				c.JSON(400, gin.H{"message": "供应商已停用，无法设为当前"})
+				return
+			}
 			viper.Set("ai.base_url", p.BaseURL)
 			viper.Set("ai.api_key", p.APIKey)
 			viper.Set("ai.model", p.Model)
 			viper.Set("ai.vision_model", p.VisionModel)
+			viper.Set("ai.api_format", p.APIFormat)
 			viper.Set("ai.active", p.Name)
 			if err := viper.WriteConfig(); err != nil {
 				c.JSON(500, gin.H{"message": "配置写入失败：" + err.Error()})
@@ -317,42 +353,35 @@ func ProvidersDelete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "已删除 " + in.Name})
 }
 
-// ProvidersTest POST /adapter-service/providers/test —— 连通性测试（真实请求）
+// ProvidersTest POST /adapter-service/providers/test —— 连通性测试（走真实协议路径）
 func ProvidersTest(c *gin.Context) {
 	var in Provider
 	if err := c.ShouldBindJSON(&in); err != nil || in.BaseURL == "" || in.APIKey == "" {
 		c.JSON(400, gin.H{"message": "接口地址与密钥必填"})
 		return
 	}
-	client := &http.Client{Timeout: 20 * time.Second}
-	body := fmt.Sprintf(`{"model":%q,"messages":[{"role":"user","content":"回复OK"}],"max_tokens":2000}`, in.Model)
-	req, _ := http.NewRequest("POST", strings.TrimSuffix(in.BaseURL, "/")+"/chat/completions", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+in.APIKey)
-	resp, err := client.Do(req)
+	if in.Model == "" {
+		c.JSON(400, gin.H{"message": "请先填写模型名称"})
+		return
+	}
+	normalizeProvider(&in)
+	client := &search.ChatGptClient{
+		Enable:    true,
+		BaseURL:   in.BaseURL,
+		APIKey:    in.APIKey,
+		Model:     in.Model,
+		APIFormat: in.APIFormat,
+	}
+	text, err := client.TestConnect(in.Model)
 	if err != nil {
-		c.JSON(200, gin.H{"ok": false, "message": "连接失败：" + err.Error()})
+		c.JSON(200, gin.H{"ok": false, "message": "请求失败：" + err.Error()})
 		return
 	}
-	defer resp.Body.Close()
-	var out struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
-		Error any `json:"error"`
-	}
-	_ = json.NewDecoder(resp.Body).Decode(&out)
-	if resp.StatusCode != 200 {
-		c.JSON(200, gin.H{"ok": false, "message": fmt.Sprintf("HTTP %d：%v", resp.StatusCode, out.Error)})
-		return
-	}
-	if len(out.Choices) == 0 || strings.TrimSpace(out.Choices[0].Message.Content) == "" {
+	if strings.TrimSpace(text) == "" {
 		c.JSON(200, gin.H{"ok": false, "message": "模型返回空正文（推理模型可能需要更大的 max_tokens）"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"ok": true, "model": in.Model, "message": "连通成功"})
+	c.JSON(http.StatusOK, gin.H{"ok": true, "model": in.Model, "message": "连通成功（" + in.APIFormat + " 格式）"})
 }
 
 // Auth 用户鉴权中间件

@@ -201,6 +201,7 @@ func Search(c *gin.Context) {
 				APIKey:      aiCfg.APIKey,
 				Model:       aiCfg.Model,
 				VisionModel: aiCfg.VisionModel,
+				APIFormat:   aiCfg.APIFormat,
 			}
 			res, err := chatGpt.SearchAnswer(req)
 			if err != nil {
