@@ -30,6 +30,12 @@
         </template>
         <span>日志列表</span>
       </a-menu-item>
+      <a-menu-item key="providers">
+        <template #icon>
+          <CloudServerOutlined />
+        </template>
+        <span>供应商管理</span>
+      </a-menu-item>
     </a-menu>
   </div>
 </template>
@@ -40,7 +46,8 @@ import {
   PieChartOutlined,
   DownloadOutlined,
   TeamOutlined,
-  FileTextOutlined 
+  FileTextOutlined,
+  CloudServerOutlined
 } from '@ant-design/icons-vue';
 const selectedKeys = ref([])
 export default defineComponent({
@@ -77,7 +84,8 @@ export default defineComponent({
     PieChartOutlined,
     DownloadOutlined,
     TeamOutlined,
-    FileTextOutlined
+    FileTextOutlined,
+    CloudServerOutlined
   },
 });
 </script>

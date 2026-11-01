@@ -213,12 +213,25 @@ func ProvidersList(c *gin.Context) {
 // ProvidersSave POST /adapter-service/providers/save —— 新增/更新供应商并设为当前，持久化 config.yaml
 func ProvidersSave(c *gin.Context) {
 	var in Provider
-	if err := c.ShouldBindJSON(&in); err != nil || in.Name == "" || in.BaseURL == "" || in.APIKey == "" {
-		c.JSON(400, gin.H{"message": "名称/接口地址/密钥必填"})
+	if err := c.ShouldBindJSON(&in); err != nil || in.Name == "" || in.BaseURL == "" {
+		c.JSON(400, gin.H{"message": "名称/接口地址必填"})
 		return
 	}
 	var list []Provider
 	_ = viper.UnmarshalKey("providers", &list)
+	// 密钥留空 = 沿用同名供应商已有密钥（列表接口返回的是掩码，编辑回填不能把掩码存成真 key）
+	if in.APIKey == "" {
+		for _, p := range list {
+			if p.Name == in.Name && p.APIKey != "" {
+				in.APIKey = p.APIKey
+				break
+			}
+		}
+		if in.APIKey == "" {
+			c.JSON(400, gin.H{"message": "API Key 必填"})
+			return
+		}
+	}
 	replaced := false
 	for i := range list {
 		if list[i].Name == in.Name {

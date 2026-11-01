@@ -8,6 +8,7 @@ import TikuComponent from '../pages/TikuComponent/index.vue';
 import IntelligentImport from '../pages/IntelligentImport/index.vue';
 import UserList from '../pages/UserList/index.vue'
 import LogList from '../pages/LogList/index.vue'
+import ProviderManage from '../pages/ProviderManage/index.vue'
 const routes = [
   {
     path: '/',
@@ -46,6 +47,11 @@ const routes = [
         path: 'loglist',
         name: 'loglist',
         component: LogList,
+      },
+      {
+        path: 'providers',
+        name: 'providers',
+        component: ProviderManage,
       }
     ]
   }

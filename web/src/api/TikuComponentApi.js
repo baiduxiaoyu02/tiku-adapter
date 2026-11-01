@@ -87,6 +87,48 @@ export function getLogList(params) {
   })
 }
 
+// ===== 模型供应商管理 =====
+// 获取当前配置与供应商列表（密钥掩码）
+export function getProviders() {
+  return request({
+    url: `/adapter-service/providers`,
+    method: 'GET'
+  })
+}
+// 新增/更新供应商并设为当前（api_key 留空 = 沿用已有密钥）
+export function saveProvider(data) {
+  return request({
+    url: `/adapter-service/providers/save`,
+    method: 'post',
+    data
+  })
+}
+// 切换当前供应商
+export function switchProvider(data) {
+  return request({
+    url: `/adapter-service/providers/switch`,
+    method: 'post',
+    data
+  })
+}
+// 删除供应商
+export function deleteProvider(data) {
+  return request({
+    url: `/adapter-service/providers/delete`,
+    method: 'post',
+    data
+  })
+}
+// 连通性测试
+export function testProvider(data) {
+  return request({
+    url: `/adapter-service/providers/test`,
+    method: 'post',
+    data,
+    timeout: 30 * 1000
+  })
+}
+
 
 
 
