@@ -4,7 +4,7 @@
 
 ## 快速开始（Windows）
 
-1. 从本仓库 [Releases](https://github.com/baiduxiaoyu/tiku-adapter/releases) 下载 `tiku-adapter-setup.exe`（或 zip 压缩包），双击安装；
+1. 从本仓库 [Releases](https://github.com/baiduxiaoyu02/tiku-adapter/releases) 下载 `tiku-adapter-setup.exe`（或 zip 压缩包），双击安装；
 2. 启动后托盘常驻，浏览器打开 <http://localhost:8060>；
 3. 配置 AI：打开 <http://localhost:8060/providers> 填入你自己的模型接口地址与 API Key（任何 OpenAI 兼容接口均可），点「测试连通」；
 4. 对接 OCS 网课助手：打开 <http://localhost:8060/ocs-config> 复制配置 JSON，粘进 OCS 题库设置即可搜题（含图片题）。
@@ -59,7 +59,7 @@
 
 ### 方式一：下载可执行文件
 
-从本仓库 [Releases](https://github.com/baiduxiaoyu/tiku-adapter/releases) 下载对应的版本，解压后运行即可
+从本仓库 [Releases](https://github.com/baiduxiaoyu02/tiku-adapter/releases) 下载对应的版本，解压后运行即可
 
 ### 方式二：Docker 部署
 
