@@ -25,10 +25,8 @@ jobs:
           ENNCY_TOKEN: ${{ secrets.ENNCY_TOKEN }}
         run: go test -v ./...
 
-      - name: Go Lint
-        uses: Jerome1337/golint-action@v1.0.2
-        with:
-          golint-path: './...'
+      - name: Go Vet
+        run: go vet ./...
 
       - name: JS Lint
         run: |
