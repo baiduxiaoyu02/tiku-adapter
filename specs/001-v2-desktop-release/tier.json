@@ -1,0 +1,41 @@
+{
+  "task_type": "dev",
+  "tier": "full",
+  "signals": {
+    "changed_files": 15,
+    "cross_module": true,
+    "interface_or_model_change": true,
+    "irreversible": true,
+    "new_dependency": true,
+    "unfamiliar_stack": true,
+    "time_sensitive_fact": false,
+    "multiple_candidates": true,
+    "user_requested": true
+  },
+  "project": "D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter",
+  "run_dir": "D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/specs/001-v2-desktop-release",
+  "slug": "v2-github-release",
+  "commands": {
+    "test": "\"C:/Program Files/Go/bin/go.exe\" test ./... -count=1",
+    "lint": "",
+    "type": "",
+    "visual": "",
+    "test_timeout": 600
+  },
+  "declared_files": [
+    "internal/controller/user.go",
+    "internal/controller/user_test.go",
+    "internal/controller/ocs_config.go",
+    "internal/api/router.go",
+    "internal/registry/config.go",
+    "configs/config.go",
+    "web/src/",
+    "web/ocs-config-template.html",
+    ".goreleaser.yaml",
+    "README.md"
+  ],
+  "created_at": "2026-11-01T00:00:00Z",
+  "base_sha": null,
+  "specPath": "specs/001-v2-desktop-release/spec.md",
+  "research_depth": "deep"
+}

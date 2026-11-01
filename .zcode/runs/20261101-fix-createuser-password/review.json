@@ -1,0 +1,72 @@
+{
+  "reviewer_id": "审查员-3",
+  "implementer_id": "implementer-20261101-fix-createuser-password",
+  "rounds": 2,
+  "blockers": [],
+  "issues": [
+    {
+      "id": "R1",
+      "severity": "minor",
+      "status": "fixed",
+      "repro": "cat .zcode/runs/20261101-fix-createuser-password/tier.json | grep -c 'internal/' 对照 git status --porcelain -uall 的产品文件清单",
+      "evidence": "上轮（审查员-2）报 declared_files 仅 4 个。本轮实测读取 tier.json：declared_files 含 user.go、user_test.go、ocs_config.go、ocs-config.html、router.go、ocs_config_test.go、scripts/hashgen/main.go 共 7 个，与 git status 产品文件一一对应；tasks.md T1 files 含 hashgen/main.go、T2 files 含 ocs-config.html 与 ocs_config_test.go；tdd.jsonl 第 3/4 条 note 补记 scope 修复轮复验。声明与实际改动一致"
+    },
+    {
+      "id": "R2",
+      "severity": "minor",
+      "status": "open",
+      "repro": "git -C D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter status --porcelain -uall | grep ship.json",
+      "evidence": "实测 git status 仍列出 M .zcode/runs/20261101-windows-package/ship.json（上一 run 的未提交改动）。非本 run 代码问题，仅提醒：交付暂存时按文件名添加，勿混入本 run 提交"
+    },
+    {
+      "id": "R3",
+      "severity": "minor",
+      "status": "open",
+      "repro": "grep -ci 'login\\|登录' .zcode/runs/20261101-fix-createuser-password/logs/T3-verify.log；读 internal/controller/user_test.go 全文查创建→登录端到端用例",
+      "evidence": "实测 grep 计数 0（no-login-in-verify-log），user_test.go 仅 TestUserCreateRequest（DTO 绑定）与 TestUserEntityNoPasswordLeak（序列化不泄露）两个单元用例，无 AC-1 要求的「API 创建用户→登录成功」端到端。根因（DTO 密码绑定）已被单元测试锁定且回退验证通过，登录侧 VerifyPassword 为既有代码，风险低；建议下轮补一条 httptest 端到端用例"
+    },
+    {
+      "id": "R4",
+      "severity": "minor",
+      "status": "open",
+      "repro": "grep -o '\"run_id\"[^,}]*' .zcode/runs/20261101-fix-createuser-password/gates.json; grep -o 'run_id[^,}]*' .zcode/runs/20261101-fix-createuser-password/gates-plan.txt",
+      "evidence": "实测 gates.json run_id=0e3cb184fb6d（scope 修复轮已重跑，上轮为 e46d4cf2f275），gates-plan.txt 仍为 d83a5393bc04（旧产物未更新）。两文件 head_sha 均为 fcdd2ad465ad275f4801a0e2c80955213df72ece，内容无矛盾；属陈旧产物残留提示，无实质风险"
+    }
+  ],
+  "rollback_checks": [
+    {
+      "test": "internal/controller/user_test.go (TestUserCreateRequest|TestUserEntityNoPasswordLeak)",
+      "failed_without_impl": true,
+      "passed_with_impl": true,
+      "evidence": "git worktree add --detach /tmp/rev-tiku-fcdd2ad-r3 fcdd2ad465ad275f4801a0e2c80955213df72ece，复制当前 user_test.go 后 go test ./internal/controller/ -run 'TestUserCreateRequest|TestUserEntityNoPasswordLeak' -count=1 → 输出 internal/controller/user_test.go:13:10: undefined: userCreateRequest，[build failed]（exit 1，echo 显示的 0 为管道 tail 的退出码）；工作树同命令 -v → TestUserCreateRequest PASS、TestUserEntityNoPasswordLeak PASS、ok（exit 0）。worktree 已 remove --force，worktree list 确认无残留"
+    },
+    {
+      "test": "internal/api/ocs_config_test.go (TestOcsConfigRoute)",
+      "failed_without_impl": true,
+      "passed_with_impl": true,
+      "evidence": "同一基线 worktree（fcdd2ad）+ 当前 ocs_config_test.go：go test ./internal/api/ -run TestOcsConfigRoute -count=1 → 输出 ocs_config_test.go:20: GET /ocs-config 期望 200，实际 404，FAIL；工作树（含 router.go 注册与 ocs_config.go 实现）go test ./internal/api/ -run TestOcsConfig -count=1 → ok（exit 0）。抽样 2/2 ≥ ceil(tdd 记录数 4 / 3) = 2"
+    }
+  ],
+  "leftover_checks": [
+    {
+      "id": "L1",
+      "status": "fixed",
+      "evidence": "对应上轮 R1（declared_files/tasks.md 与实际改动不一致）：本轮实测 tier.json declared_files=7 个文件、tasks.md T1/T2 files 已补全、tdd.jsonl 已补 scope 修复轮复验记录，声明与 git status 产品文件一一对应"
+    },
+    {
+      "id": "L2",
+      "status": "open",
+      "evidence": "对应上轮 R2（上一 run ship.json 遗留未提交改动）：实测 git status 仍列出 M .zcode/runs/20261101-windows-package/ship.json，仍需交付时按文件名暂存避免混入"
+    },
+    {
+      "id": "L3",
+      "status": "open",
+      "evidence": "对应上轮 R3（AC-1 端到端缺失）：实测 grep -ci 'login\\|登录' logs/T3-verify.log = 0，user_test.go 全文无创建→登录用例；单元级根因锁定未变，建议下轮补端到端用例"
+    },
+    {
+      "id": "L4",
+      "status": "open",
+      "evidence": "对应上轮 R4（gates 产物 run_id 不一致）：实测 gates.json run_id=0e3cb184fb6d（已重跑更新），gates-plan.txt 仍 d83a5393bc04；head_sha 均为基线 fcdd2ad，无矛盾，陈旧产物提示仍在"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "run_dir": "D:\\user\\Zcode\\xubo\\.zcode\\workspace\\default\\tiku-adapter\\.zcode\\runs\\20261101-windows-package",
+  "branch": "feat/windows-package",
+  "base": "51da1c43d030be260fad435e7247b9154b32a4ad",
+  "phase": "delivery-local",
+  "updated_at": "2026-10-31T21:28:39Z",
+  "checkpoints": [
+    "plan",
+    "build",
+    "review",
+    "verify"
+  ],
+  "manifest": "pass",
+  "commit": {
+    "committed": true,
+    "head": "aa360935c0cb370e22fcba11a0e9c7029b017060"
+  },
+  "changes": [
+    ".gitignore",
+    "deploy/README.md",
+    "internal/api/router.go",
+    "internal/api/router_alias_test.go",
+    "packaging/README.md",
+    "packaging/config.yaml",
+    "packaging/tiku-setup.iss",
+    "packaging/tray/tiku-launcher.vbs",
+    "packaging/tray/tiku-tray.ps1",
+    "scripts/build-windows.ps1",
+    "web/ocs-config.json"
+  ],
+  "local": "pass",
+  "localOnly": true
+}

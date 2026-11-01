@@ -1,0 +1,157 @@
+{
+  "schema": 2,
+  "run_id": "c0e942b30684",
+  "run_dir": "D:\\user\\Zcode\\xubo\\.zcode\\workspace\\default\\tiku-adapter\\.zcode\\runs\\20261101-fix-createuser-password",
+  "tier": "bounded",
+  "checkpoint": "",
+  "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+  "tree_sha": "sha256:2f9d32787885f03977b1d87865710d8508b4d7c2823bc312503f426552e1c622",
+  "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+  "at": "2026-11-01T05:06:19Z",
+  "results": [
+    {
+      "gate": "tier",
+      "status": "pass",
+      "message": "declared bounded >= floor bounded",
+      "evidence": {},
+      "at": "2026-11-01T05:06:15Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:dc21db151328ae2a956a4fc1653ff29ccdee55a60d69f176d5827969c39700c4",
+      "artifact_hash": "sha256:1d253e5dff08be28cf49a37d45ead04841bfcbff1e39629d290ed21745d6eca0",
+      "stale": false
+    },
+    {
+      "gate": "research_schema",
+      "status": "pass",
+      "message": "5 conclusions, 6 distinct sources",
+      "evidence": {},
+      "at": "2026-11-01T05:06:15Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:dc21db151328ae2a956a4fc1653ff29ccdee55a60d69f176d5827969c39700c4",
+      "artifact_hash": "sha256:b1cbfb9c093b9cc97355405d103c5c6fe45d7e9dd737a86285d559ab3fa0d785",
+      "stale": false
+    },
+    {
+      "gate": "research_depth",
+      "status": "pass",
+      "message": "depth=quick, sources=6",
+      "evidence": {},
+      "at": "2026-11-01T05:06:15Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:dc21db151328ae2a956a4fc1653ff29ccdee55a60d69f176d5827969c39700c4",
+      "artifact_hash": "sha256:b1cbfb9c093b9cc97355405d103c5c6fe45d7e9dd737a86285d559ab3fa0d785",
+      "stale": false
+    },
+    {
+      "gate": "spec",
+      "status": "pass",
+      "message": "3 FR items",
+      "evidence": {},
+      "at": "2026-11-01T05:06:15Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:dc21db151328ae2a956a4fc1653ff29ccdee55a60d69f176d5827969c39700c4",
+      "artifact_hash": "sha256:8229616f543c9fd72b3e5d927412c7a9e6a34d2684cfca7620b70d5f6e569e29",
+      "stale": false
+    },
+    {
+      "gate": "design",
+      "status": "pass",
+      "message": "3 mapping rows",
+      "evidence": {},
+      "at": "2026-11-01T05:06:15Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:dc21db151328ae2a956a4fc1653ff29ccdee55a60d69f176d5827969c39700c4",
+      "artifact_hash": "sha256:9b821d03cf5cca2ed1865fe6e929fb3e5a67c93578e30380330d888f5f58e805",
+      "stale": false
+    },
+    {
+      "gate": "test",
+      "status": "pass",
+      "message": "test command exit 0 (scope=test)",
+      "evidence": {
+        "cmd": "\"C:/Program Files/Go/bin/go.exe\" test ./internal/controller/ -run TestUser -count=1 -v",
+        "scope": "test"
+      },
+      "at": "2026-11-01T05:06:19Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:d6ba9e50e7b075a9676d71cf9a663083e737f76dcff4aedac30eaeab766db5a5",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "lint",
+      "status": "skip",
+      "message": "no lint/type command configured",
+      "evidence": {},
+      "at": "2026-11-01T05:06:19Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:d6ba9e50e7b075a9676d71cf9a663083e737f76dcff4aedac30eaeab766db5a5",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "visual",
+      "status": "na",
+      "message": "no visual command (non-UI task)",
+      "evidence": {},
+      "at": "2026-11-01T05:06:19Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:d6ba9e50e7b075a9676d71cf9a663083e737f76dcff4aedac30eaeab766db5a5",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "scope",
+      "status": "pass",
+      "message": "7 个改动均在 declared_files 内",
+      "evidence": {},
+      "at": "2026-11-01T05:06:19Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:d6ba9e50e7b075a9676d71cf9a663083e737f76dcff4aedac30eaeab766db5a5",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "tdd",
+      "status": "pass",
+      "message": "2 tasks, 2 RED/GREEN records",
+      "evidence": {},
+      "at": "2026-11-01T05:06:16Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:7535de794ee4557eb27f611c818cd8d7b61e97d7f8de78ca0650ffc00dd53de9",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "review",
+      "status": "pass",
+      "message": "4 issues, 0 blockers",
+      "evidence": {},
+      "at": "2026-11-01T05:06:16Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:86d7e931d43b5057126a5b30f2be3643268013bc42795ee99e836af611d80657",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": true
+    },
+    {
+      "gate": "manifest",
+      "status": "pass",
+      "message": "8 artifacts present",
+      "evidence": {},
+      "at": "2026-11-01T05:06:19Z",
+      "head_sha": "fcdd2ad465ad275f4801a0e2c80955213df72ece",
+      "tree_sha": "sha256:2f9d32787885f03977b1d87865710d8508b4d7c2823bc312503f426552e1c622",
+      "artifact_hash": "sha256:f5d6c5b135fc3ec7c1b2570d213c6bea970da847b79000df9be2686787ed65f5",
+      "stale": false
+    }
+  ],
+  "summary": {
+    "pass": 6,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "na": 0,
+    "stale": 6,
+    "total": 6
+  }
+}

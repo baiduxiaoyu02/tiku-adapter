@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# IDE / 编辑器
+.idea
+.vscode
+*.swp
+*.swo
+
+# 构建产物
+web/node_modules
+web/dist
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 测试与文档
+test/
+docs/
+*.md
+!configs/README.md
+!deploy/README.md
+!README.md
+
+# 本地数据库与数据
+data/
+*.db
+*.db-journal
+
+# Docker 自身
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# CI / 其他
+.github
+*.log

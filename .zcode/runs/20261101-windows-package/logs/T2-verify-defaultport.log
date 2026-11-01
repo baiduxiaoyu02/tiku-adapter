@@ -1,0 +1,6 @@
+[1/4] 工具链：go version go1.21.13 windows/amd64 | GOTOOLCHAIN=go1.21.13 | CGO_ENABLED=0
+[2/4] 复用已有前端：cmd/adapter-service/dist
+[3/4] go build -> dist/tiku-adapter.exe
+    产物就绪：D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\dist\tiku-adapter.exe（35 MB）
+[build-windows] 冒烟地址 127.0.0.1:8060 已被监听（PID: 38352）。打包版与现有 Docker 部署共用 8060、二者互斥：
+在占用服务运行时对新 exe 探活会打到旧服务、得到假通过。停止占用进程后重跑，或用 -SmokeBind 换空闲地址。

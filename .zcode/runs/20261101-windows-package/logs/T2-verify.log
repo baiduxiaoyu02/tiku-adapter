@@ -1,0 +1,6 @@
+[1/4] 工具链：go version go1.21.13 windows/amd64 | GOTOOLCHAIN=go1.21.13 | CGO_ENABLED=0
+[2/4] 复用已有前端：cmd/adapter-service/dist
+[3/4] go build -> dist/tiku-adapter.exe
+    产物就绪：D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\dist\tiku-adapter.exe（35 MB）
+[4/4] 启动冒烟：http://10.11.172.155:8060（临时目录 C:\Users\xubo\AppData\Local\Temp\tiku-smoke-8c39388c）
+    冒烟通过：PID 101576 监听 10.11.172.155:8060 | GET /api/search -> 200 | GET / -> 200（exe 启动正常）

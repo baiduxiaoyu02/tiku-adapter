@@ -1,0 +1,49 @@
+{
+  "reviewer_id": "审查员-3",
+  "implementer_id": "实现者-20261101-windows-package",
+  "rounds": 2,
+  "blockers": [],
+  "issues": [
+    {
+      "id": "R6",
+      "severity": "minor",
+      "status": "open",
+      "repro": "cd D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter && ls .zcode/runs/20261101-windows-package/logs/ | grep -ci 'reverify\\|fix'  # 现状 exit 1（0 个修复后复验日志）；tail -1 .zcode/runs/20261101-windows-package/logs/T5-verify.log 仍止于「需 T3/T4 归属方修复」（全文 68 行无修复后复验段）。补 D1/D2 修复后复验日志（或 ⑥ 前人工确认）后 exit 0。",
+      "evidence": "packaging/README.md「修复记录」（README:130-141）与 tasks.md:9 声称 D1 修复后「全链路复验通过（托盘存活、服务运行、/api/search 探活 200）」、D2 修复后「模拟卸载实测：服务进程被停止、exe 文件解锁可删」，但 logs/ 目录仅 T1-red/T1-green/T2-verify/T2-verify-defaultport/T3-verify/T4-verify/T5-verify 七个文件，T5-verify.log 止于缺陷发现（本会话 tail 实测，第 68 行为「需 T3/T4 归属方修复」）。修复本身已由本轮独立核验成立（R1 语法动态复验 exit 0、R2 源码比较对象改为 exe 全路径且上轮 T5 ⑤ 实测全路径形式可匹配 pid=72056），但声称的端到端复验无可核对产物；卸载复验涉及 UAC 提权安装/卸载，审查不重跑，留 ⑥ 或人工补记录。"
+    }
+  ],
+  "rollback_checks": [
+    {
+      "test": "internal/api/router_alias_test.go（TestAPISearchAliasProbe + TestAPISearchAliasIsomorphic 共 4 用例；tdd.jsonl 1 条记录，抽样 ceil(1/3)=1）：git worktree add %TEMP%/tiku-review-wt-r3 51da1c43d030be260fad435e7247b9154b32a4ad → 复制当前测试文件进去 → \"/c/Program Files/Go/bin/go.exe\" -C <worktree> test ./internal/api/ -run TestAPISearchAlias -count=1 → 实测 RED exit 1（--- FAIL: TestAPISearchAliasProbe / TestAPISearchAliasIsomorphic 及 2 子用例）→ git worktree remove --force 清理成功；当前工作树同命令 GREEN exit 0（=== RUN 两个测试均 PASS，非 no tests to run）",
+      "failed_without_impl": true,
+      "passed_with_impl": true
+    }
+  ],
+  "leftover_checks": [
+    {
+      "id": "R1",
+      "status": "fixed",
+      "evidence": "旧调用 grep -cF 'Mutex($true, \"Local\\tiku-adapter-tray\", $true)' packaging/tray/tiku-tray.ps1 = 0，新写法 [ref]$createdNew 于 tiku-tray.ps1:131-132 命中 1 次；动态复验 powershell -NoProfile 'New-Object System.Threading.Mutex($true,\"Local\\tiku-review-check\",[ref]$created)' exit 0（上轮同式无 [ref] 报「参数3应为 PSReference」exit 1）。"
+    },
+    {
+      "id": "R2",
+      "status": "fixed",
+      "evidence": "tiku-setup.iss:85 停进程过滤已改为与 ExpandConstant('{app}')+'\\tiku-adapter.exe' 全路径比较（grep 新串命中 1 次，旧 '-eq ''{app}''' 已不存在）；:88 托盘停进程按 '*{app}\\tray\\tiku-tray.ps1*' 路径限定并排除 $PID 自身（README:126-127 与之一致，不再误杀其他副本）。上轮 T5-verify.log ⑤ 已实测 exe 全路径形式可匹配进程（pid=72056），修复方向有端到端证据支撑。"
+    },
+    {
+      "id": "R3",
+      "status": "fixed",
+      "evidence": "tier.json:19 commands.test 已改为 -run TestAPISearchAlias（与 router_alias_test.go:48,66 的 TestAPISearchAliasProbe/TestAPISearchAliasIsomorphic 匹配）；本会话实测 go test ./internal/api/ -run TestAPISearchAlias -count=1 -v exit 0 且真实运行 2 测试 + 2 子用例（无 no tests to run 假绿）。"
+    },
+    {
+      "id": "R4",
+      "status": "fixed",
+      "evidence": "packaging/config.yaml:30 现为占位符 sk-xxxx-change-me；grep 'sk-cpa-a719480f' packaging/config.yaml = 0，git grep 于 base 51da1c43 与当前工作树跟踪文件均 0 命中（真 key 不入库）。"
+    },
+    {
+      "id": "R5",
+      "status": "fixed",
+      "evidence": ".gitignore:9 新增 /dist/（本 run diff 实见）；git check-ignore -q dist/tiku-adapter.exe exit 0，构建产物不再易随交付入库。"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>devflow 运行视图 · windows-package</title>
+<style>
+:root { color-scheme: light dark; --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#6b7280;
+  --line:#dde1e6; --ok:#0f7b3e; --bad:#b42318; --warn:#9a6700; --accent:#2457c5; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0f1216; --card:#171b21; --ink:#e6e9ee;
+  --muted:#9aa4b2; --line:#2a3038; --ok:#5dd39e; --bad:#ff8a80; --warn:#ffd166; --accent:#8ab4ff; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font: 15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:24px 20px 64px; }
+header { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin-bottom:6px; }
+h1 { font-size:24px; margin:0; letter-spacing:-.02em; }
+h2 { font-size:17px; margin:28px 0 10px; }
+.sub { color:var(--muted); font-size:13px; }
+.cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+.card .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+.card .v { font-size:24px; font-weight:650; margin-top:2px; }
+section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px 16px 16px; margin-top:14px; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; table-layout:fixed; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere; word-break:break-word; }
+th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+tr:last-child td { border-bottom:0; }
+.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12.5px; }
+.wrap { overflow-wrap:anywhere; }
+.muted { color:var(--muted); }
+.badge { display:inline-block; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:600;
+  border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+.badge.ok { color:var(--ok); border-color:color-mix(in srgb,var(--ok) 40%,transparent); }
+.badge.bad { color:var(--bad); border-color:color-mix(in srgb,var(--bad) 40%,transparent); }
+ul { margin:8px 0 0; padding-left:20px; }
+details summary { cursor:pointer; color:var(--accent); font-size:13px; margin:8px 0; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px) {
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid2 { grid-template-columns:1fr; }
+  main { padding:18px 12px 48px; }
+}
+</style>
+</head>
+<body><main>
+<header><h1>devflow 运行视图</h1><span class="badge">bounded</span></header>
+<div class="sub">windows-package · 生成于 2026-10-31 19:27:09Z · 来源 <span class="mono">D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\.zcode\runs\20261101-windows-package</span></div>
+<div class="cards">
+  <div class="card"><div class="k">任务</div><div class="v">0/5</div></div>
+  <div class="card"><div class="k">TDD 记录</div><div class="v">0</div></div>
+  <div class="card"><div class="k">未关闭 / blocker</div><div class="v">0/0</div></div>
+  <div class="card"><div class="k">门禁 pass/fail</div><div class="v">5/0</div></div>
+</div>
+
+<section><h2>规格与计划</h2>
+<div class="grid2">
+<div><h3>功能需求</h3><ul><li><b>FR-1</b> FR-1 `/api/search` 路由别名：与 `/adapter-service/search` 复用同一搜题处理器；POST 搜题、</li><li><b>FR-2</b> FR-2 Windows 原生构建：产出 `dist/tiku-adapter.exe`（前端与 SQLite 内嵌，无外部运行时依赖）。</li><li><b>FR-3</b> FR-3 打包目录结构：`tiku-adapter.exe` + `config.yaml`（本地路径与 AI 配置模板）+ `data/`</li><li><b>FR-4</b> FR-4 Inno Setup 安装包：安装到 Program Files、开始菜单与桌面快捷方式、可选开机自启、</li><li><b>FR-5</b> FR-5 OCS 配置文件随包分发：`ocs-config.json` 的 url 指向 `http://localhost:8060/api/search`。</li></ul></div>
+<div><h3>计划映射</h3><table><thead><tr><th>FR</th><th>任务</th><th>目标文件</th><th>验收</th></tr></thead><tbody><tr><td class='wrap'>FR-1</td><td class='wrap'>T1 路由别名（TDD）</td><td class='wrap'>internal/api/router.go</td><td class='wrap'>AC-1</td></tr><tr><td class='wrap'>FR-2</td><td class='wrap'>T2 Windows 构建脚本</td><td class='wrap'>scripts/build-windows.ps1</td><td class='wrap'>AC-2</td></tr><tr><td class='wrap'>FR-3</td><td class='wrap'>T3 打包目录与托盘</td><td class='wrap'>packaging/tray/tiku-tray.ps1</td><td class='wrap'>AC-3</td></tr><tr><td class='wrap'>FR-4</td><td class='wrap'>T4 Inno Setup 安装包</td><td class='wrap'>packaging/tiku-setup.iss</td><td class='wrap'>AC-3 / AC-4</td></tr><tr><td class='wrap'>FR-5</td><td class='wrap'>T3 OCS 配置随包更新</td><td class='wrap'>web/ocs-config.json</td><td class='wrap'>AC-1</td></tr><tr><td class='wrap'>全链</td><td class='wrap'>T5 端到端冒烟与文档</td><td class='wrap'>packaging/README.md</td><td class='wrap'>AC-1 / AC-2 / AC-3</td></tr></tbody></table></div>
+</div>
+<details><summary>声明改动范围（8）</summary>
+<p class="mono wrap">internal/api/router.go, internal/api/router_alias_test.go, scripts/build-windows.ps1, web/ocs-config.json, packaging/tray/tiku-tray.ps1, packaging/tiku-setup.iss, packaging/README.md, .gitignore</p>
+<p class="sub">测试命令：<span class="mono">go test ./... -run TestSearchAlias -count=1</span></p>
+</details>
+</section>
+
+<section><h2>任务</h2>
+<table><thead><tr><th>编号</th><th>状态</th><th>任务</th><th>文件</th><th>依赖</th></tr></thead>
+<tbody><tr><td class='mono'>T1</td><td><span class="badge muted">pending</span></td><td>— /api/search 路由别名，TDD：先写 internal/api/router_alias_test.go（httptest：GET/HEAD 探活 200、POST 别名与 /adapter-service/search 同构）看 RED，再加路由转 GREEN</td><td class='mono'>internal/api/router.go, internal/api/router_alias_test.go</td><td class='mono'>-</td></tr><tr><td class='mono'>T2</td><td><span class="badge muted">pending</span></td><td>skip-tdd — Windows 原生构建脚本（GOTOOLCHAIN=go1.21.13 锁工具链），验证=编译退出码 0 + exe 存在 + 启动冒烟 8060 探活 200</td><td class='mono'>scripts/build-windows.ps1</td><td class='mono'>T1</td></tr><tr><td class='mono'>T3</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 打包目录与托盘（托盘启动本地 exe 而非 Docker），ocs-config url 改 http://localhost:8060/api/search，验证=托盘脚本启动 exe 且探活 200</td><td class='mono'>packaging/tray/tiku-tray.ps1, packaging/config.yaml, web/ocs-config.json</td><td class='mono'>T2</td></tr><tr><td class='mono'>T4</td><td><span class="badge muted">pending</span></td><td>skip-tdd — Inno Setup 安装包（安装目录/开始菜单/桌面快捷方式/可选自启/卸载保留数据），验证=ISCC 编译退出码 0 + 产出 setup exe</td><td class='mono'>packaging/tiku-setup.iss</td><td class='mono'>T3</td></tr><tr><td class='mono'>T5</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 端到端冒烟与文档（静默安装→启动→/api/search 探活→POST 搜题正确→卸载验证），README 记录安装/使用/卸载与 OCS 对接</td><td class='mono'>packaging/README.md</td><td class='mono'>T4</td></tr></tbody></table>
+</section>
+
+<section><h2>门禁</h2>
+<table><thead><tr><th>门</th><th>状态</th><th>说明</th></tr></thead>
+<tbody><tr><td class='mono'>tier</td><td><span class="badge ok">pass</span></td><td>declared bounded &gt;= floor bounded</td></tr><tr><td class='mono'>research_schema</td><td><span class="badge ok">pass</span></td><td>6 conclusions, 7 distinct sources</td></tr><tr><td class='mono'>research_depth</td><td><span class="badge ok">pass</span></td><td>depth=quick, sources=7</td></tr><tr><td class='mono'>spec</td><td><span class="badge ok">pass</span></td><td>5 FR items</td></tr><tr><td class='mono'>design</td><td><span class="badge ok">pass</span></td><td>6 mapping rows</td></tr></tbody></table>
+</section>
+
+<section><h2>审查问题</h2>
+<table><thead><tr><th>编号</th><th>级别</th><th>状态</th><th>复现</th><th>证据</th></tr></thead>
+<tbody><tr><td colspan='5' class='muted'>review.json 没有问题</td></tr></tbody></table>
+</section>
+
+<section><h2>交付</h2>
+<p>阶段 <span class="badge muted">未交付</span> 
+</p>
+<p class="sub">⑦ 尚未执行或尚未写入 ship.json。</p>
+</section>
+</main></body></html>

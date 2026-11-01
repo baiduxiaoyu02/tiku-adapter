@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>devflow 运行视图 · fix-createuser-password</title>
+<style>
+:root { color-scheme: light dark; --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#6b7280;
+  --line:#dde1e6; --ok:#0f7b3e; --bad:#b42318; --warn:#9a6700; --accent:#2457c5; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0f1216; --card:#171b21; --ink:#e6e9ee;
+  --muted:#9aa4b2; --line:#2a3038; --ok:#5dd39e; --bad:#ff8a80; --warn:#ffd166; --accent:#8ab4ff; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font: 15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:24px 20px 64px; }
+header { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin-bottom:6px; }
+h1 { font-size:24px; margin:0; letter-spacing:-.02em; }
+h2 { font-size:17px; margin:28px 0 10px; }
+.sub { color:var(--muted); font-size:13px; }
+.cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+.card .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+.card .v { font-size:24px; font-weight:650; margin-top:2px; }
+section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px 16px 16px; margin-top:14px; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; table-layout:fixed; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere; word-break:break-word; }
+th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+tr:last-child td { border-bottom:0; }
+.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12.5px; }
+.wrap { overflow-wrap:anywhere; }
+.muted { color:var(--muted); }
+.badge { display:inline-block; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:600;
+  border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+.badge.ok { color:var(--ok); border-color:color-mix(in srgb,var(--ok) 40%,transparent); }
+.badge.bad { color:var(--bad); border-color:color-mix(in srgb,var(--bad) 40%,transparent); }
+ul { margin:8px 0 0; padding-left:20px; }
+details summary { cursor:pointer; color:var(--accent); font-size:13px; margin:8px 0; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px) {
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid2 { grid-template-columns:1fr; }
+  main { padding:18px 12px 48px; }
+}
+</style>
+</head>
+<body><main>
+<header><h1>devflow 运行视图</h1><span class="badge">bounded</span></header>
+<div class="sub">fix-createuser-password · 生成于 2026-11-01 04:22:36Z · 来源 <span class="mono">D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\.zcode\runs\20261101-fix-createuser-password</span></div>
+<div class="cards">
+  <div class="card"><div class="k">任务</div><div class="v">0/3</div></div>
+  <div class="card"><div class="k">TDD 记录</div><div class="v">0</div></div>
+  <div class="card"><div class="k">未关闭 / blocker</div><div class="v">0/0</div></div>
+  <div class="card"><div class="k">门禁 pass/fail</div><div class="v">3/2</div></div>
+</div>
+
+<section><h2>规格与计划</h2>
+<div class="grid2">
+<div><h3>功能需求</h3><ul><li><b>FR-1</b> FR-1 CreateUser 密码绑定：控制器改绑包含 password 字段的请求 DTO</li><li><b>FR-2</b> FR-2 OCS 配置页：新增 `GET /ocs-config` 路由，返回内嵌 HTML 页面：</li></ul></div>
+<div><h3>计划映射</h3><table><thead><tr><th>FR</th><th>任务</th><th>目标文件</th><th>验收</th></tr></thead><tbody><tr><td class='wrap'>FR-1</td><td class='wrap'>T1 CreateUser DTO 修复（TDD）</td><td class='wrap'>internal/controller/user.go</td><td class='wrap'>AC-1</td></tr><tr><td class='wrap'>FR-2</td><td class='wrap'>T2 OCS 配置生成页</td><td class='wrap'>internal/controller/ocs_config.go</td><td class='wrap'>AC-2</td></tr><tr><td class='wrap'>FR-3</td><td class='wrap'>T3 重建 exe/安装包并部署</td><td class='wrap'>dist/tiku-adapter-setup.exe</td><td class='wrap'>AC-3</td></tr></tbody></table></div>
+</div>
+<details><summary>声明改动范围（4）</summary>
+<p class="mono wrap">internal/controller/user.go, internal/controller/user_test.go, internal/controller/ocs_config.go, internal/api/router.go</p>
+<p class="sub">测试命令：<span class="mono">&quot;C:/Program Files/Go/bin/go.exe&quot; test ./internal/controller/ -run TestUser -count=1 -v</span></p>
+</details>
+</section>
+
+<section><h2>任务</h2>
+<table><thead><tr><th>编号</th><th>状态</th><th>任务</th><th>文件</th><th>依赖</th></tr></thead>
+<tbody><tr><td class='mono'>T1</td><td><span class="badge muted">pending</span></td><td>— 新增 userCreateRequest DTO（内嵌 entity.User + 外层 Password json:&quot;password&quot;），CreateUser 改绑 DTO 并把 req.Password 写回 user.Password 再 bcrypt 入库；TDD：internal/controller/user_test.go 写 TestUserCreateRequest（JSON 含 password → DTO.Password 收到值）与 TestUserEntityNoPasswordLeak（entity.User 序列化不含 password 字段），先 RED 后 GREEN</td><td class='mono'>internal/controller/user.go, internal/controller/user_test.go</td><td class='mono'>-</td></tr><tr><td class='mono'>T2</td><td><span class="badge muted">pending</span></td><td>— GET /ocs-config 返回内嵌 HTML 页（展示 AnswererWrapper JSON：url=location.origin+&#x27;/api/search&#x27;，含 options/type/images/suggestion handler，「复制配置」按钮 + 默认解析器导入步骤说明），路由注册 + 绑定测试（GET /ocs-config 含 images handler 字符串）</td><td class='mono'>internal/controller/ocs_config.go, internal/api/router.go</td><td class='mono'>T1</td></tr><tr><td class='mono'>T3</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 重建 Windows exe 与 Inno Setup 安装包，部署到 D:\user\ruanjian\TikuAdapter\ 并重启实例，验证=探活 200 + 搜题正确 + /ocs-config 页面可访问</td><td class='mono'>dist/tiku-adapter.exe, dist/tiku-adapter-setup.exe</td><td class='mono'>T1, T2</td></tr></tbody></table>
+</section>
+
+<section><h2>门禁</h2>
+<table><thead><tr><th>门</th><th>状态</th><th>说明</th></tr></thead>
+<tbody><tr><td class='mono'>tier</td><td><span class="badge ok">pass</span></td><td>declared bounded &gt;= floor bounded</td></tr><tr><td class='mono'>research_schema</td><td><span class="badge bad">fail</span></td><td>frontmatter sources=5 but counted 6</td></tr><tr><td class='mono'>research_depth</td><td><span class="badge ok">pass</span></td><td>depth=quick, sources=6</td></tr><tr><td class='mono'>spec</td><td><span class="badge bad">fail</span></td><td>needs &gt;=3 FR items, found 2</td></tr><tr><td class='mono'>design</td><td><span class="badge ok">pass</span></td><td>3 mapping rows</td></tr></tbody></table>
+</section>
+
+<section><h2>审查问题</h2>
+<table><thead><tr><th>编号</th><th>级别</th><th>状态</th><th>复现</th><th>证据</th></tr></thead>
+<tbody><tr><td colspan='5' class='muted'>review.json 没有问题</td></tr></tbody></table>
+</section>
+
+<section><h2>交付</h2>
+<p>阶段 <span class="badge muted">未交付</span> 
+</p>
+<p class="sub">⑦ 尚未执行或尚未写入 ship.json。</p>
+</section>
+</main></body></html>

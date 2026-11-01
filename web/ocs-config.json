@@ -1,0 +1,26 @@
+[
+  {
+    "name": "TikuAdapter+视觉",
+    "url": "http://localhost:8060/api/search",
+    "homepage": "https://github.com/DokiDoki1103/tikuAdapter",
+    "method": "post",
+    "type": "GM_xmlhttpRequest",
+    "contentType": "json",
+    "headers": {},
+    "data": {
+      "question": "${title}",
+      "options": {
+        "handler": "return (env)=>env.options?.split('\\n')"
+      },
+      "type": {
+        "handler": "return (env)=> env.type === 'single' ? 0 : env.type === 'multiple' ? 1 : env.type === 'completion' ? 2 : env.type === 'judgement' ? 3 : 4"
+      },
+      "images": {
+        "handler": "return (env) => env.images"
+      },
+      "suggestion_title": "${suggestion_title}",
+      "suggestion_options": "${suggestion_options}"
+    },
+    "handler": "return (res)=>res.answer.allAnswer.map(i=>([res.question,i.join('#')]))"
+  }
+]

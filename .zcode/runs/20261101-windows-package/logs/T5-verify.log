@@ -1,0 +1,68 @@
+# T5 端到端冒烟（skip-tdd）：静默安装→启动→/api/search 探活→POST 搜题→卸载验证 — 2026-11-01 04:27–04:39
+# 产物：dist/tiku-adapter-setup.exe sha256=9b5eae75f73d9c24f6ae888697ba6c4f09fb2dd6a08d51bf525ae9838e57851e
+# 环境：Docker 版占 8060（wslrelay pid 38352 + pid 52672），按 spec 互斥约定把安装配置 serverport 切到 127.0.0.1:18060
+# 提权：ConsentPromptBehaviorAdmin=5，每次提权操作需一次 UAC 确认；本轮共 3 次提权调用（第 3 次被取消，见末尾）
+
+## ① 静默安装（UAC #1，2026-11-01 04:27:39）
+# 命令：tiku-adapter-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG=<tmp>\setup-native.log
+# setup exitcode: 0
+# 安装布局（C:\Program Files\TikuAdapter）：tiku-adapter.exe + config.yaml + ocs-config.json
+#   + unins000.exe/.dat + tray\{tiku-tray.ps1, tiku-launcher.vbs, tiku.ico} + data\（预建, users-modify）
+# config.yaml 补丁：serverport: "127.0.0.1:8060" -> "127.0.0.1:18060"（保留 BOM 与注释）
+# HKLM 卸载注册表项 {56ED641C-36BD-4197-BC97-E15945B6D654}_is1 present: True（DisplayName=题库服务 TikuAdapter）
+# HKCU Run 自启值 present: False（autostart 任务默认不勾选，静默安装未写入）✓
+# 快捷方式：ProgramData\...\Start Menu\Programs\题库服务\{题库服务.lnk, 卸载题库服务.lnk} ✓
+#           Public\Desktop\题库服务.lnk（mtime 04:27 本轮）✓
+
+## ② 启动 + 探活（托盘 -SmokeTest，非提权）
+# 命令：powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\TikuAdapter\tray\tiku-tray.ps1" -SmokeTest
+# [tiku-tray] 安装根：C:\Program Files\TikuAdapter | 端口：18060
+# [tiku-tray] SMOKE OK：exe 新启动，GET /api/search -> 200
+# [tiku-tray] 验证进程已停止
+# EXIT=0 ✓（首启生成 data\tiku.db 28672 字节）
+
+## ③ 经快捷方式路径（tiku-launcher.vbs）启动 —— 发现缺陷 D1
+# 植入种子：python -I seed.py -> ROWS=1 SEED_OK question=T5E2E冒烟测试题SmokeE2E20261101 answer=["本地题库答案-SmokeE2E-20261101"]
+# wscript.exe tiku-launcher.vbs -> 托盘 powershell 立即退出，30s 内探活不通过，exe 未启动
+# 根因（前台复现，EXIT=1）：
+#   New-Object : 参数"3"应为 System.Management.Automation.PSReference。请使用 [ref]。
+#   所在位置 C:\Program Files\TikuAdapter\tray\tiku-tray.ps1:129 字符:10
+#   $mutex = New-Object System.Threading.Mutex($true, "Local\tiku-adapter-tray", $true)
+#   第三参为 out bool，PS 5.1 要求 [ref]；$ErrorActionPreference='Stop' 下托盘 UI 路径必崩。
+#   T3 仅验证了 -SmokeTest（该模式在 129 行前 return），缺陷潜伏。-> 修复归属 T3，本任务未改该文件。
+# 回退路径（与托盘 Start-App 同语义）：Start-Process -FilePath tiku-adapter.exe -WorkingDirectory 安装根 -WindowStyle Hidden
+#   -> GET probe 200 after ~1s ✓，exe pid=72056 path=C:\Program Files\TikuAdapter\tiku-adapter.exe ✓
+
+## ④ /api/search 探活 + POST 搜题（非提权，curl --noproxy '*'）
+# GET  http://127.0.0.1:18060/api/search          -> 200 ✓
+# HEAD http://127.0.0.1:18060/api/search?t=smoke  -> 200 ✓
+# POST http://127.0.0.1:18060/api/search  body={"question":"T5E2E冒烟测试题SmokeE2E20261101","type":2}
+#   -> HTTP 200
+#   -> {"plat":0,"question":"T5E2E冒烟测试题SmokeE2E20261101","options":null,"type":2,
+#       "answer":{"answerKey":[],"answerKeyText":"","answerIndex":[],
+#                 "answerText":"本地题库答案-SmokeE2E-20261101",
+#                 "bestAnswer":["本地题库答案-SmokeE2E-20261101"],
+#                 "allAnswer":[["本地题库答案-SmokeE2E-20261101"]]}}
+#   bestAnswer/allAnswer/answerText 与植入答案一致 ✓（本地题库命中，未触发 AI/第三方外呼）
+# 别名等价（AC-1）：POST /adapter-service/search 同 body -> 字节级同构 JSON ✓
+
+## ⑤ 卸载验证（UAC #2，2026-11-01 04:32:25，服务运行中执行以验证卸载器停进程逻辑）
+# unins000.exe /VERYSILENT /SUPPRESSMSGBOXES -> exitcode 0
+# 快捷方式：开始菜单组消失 ✓ | Public Desktop 题库服务.lnk 消失 ✓
+# HKLM 卸载注册表项 removed: True ✓ | HKCU Run 值 absent ✓
+# 用户数据保留（AC-4）：data\tiku.db exists after uninstall: True（32768 字节，mtime 04:32:01）✓
+# 残留：tiku-adapter.exe 未被删除 —— 发现缺陷 D2：
+#   tiku-setup.iss [Code] CurUninstallStepChanged 的停进程过滤条件为
+#   $_.ExecutablePath -eq '{app}'（= C:\Program Files\TikuAdapter，目录而非 exe 全路径）
+#   实测：dir 形式匹配 NONE（杀不到），exe 全路径形式匹配 pid=72056
+#   -> 进程未死 -> exe 文件被锁 -> Inno 跳过删除。修复归属 T4，本任务未改该文件。
+
+## ⑥ 本轮自建产物清理
+# 非提权：Stop-Process pid=72056（本轮启动的进程）✓ | 端口 18060 释放 ✓ | data\ 目录删除 ✓（users-modify ACL）
+# 需提权残留：C:\Program Files\TikuAdapter\{tiku-adapter.exe(36.7MB), }（第三次 UAC 被取消，
+#   清理命令：以管理员 Remove-Item -Recurse -Force 'C:\Program Files\TikuAdapter'）
+
+## 结论
+# 服务级链路（安装→服务启动→探活→POST 搜题→卸载删程序/快捷方式/注册表→保留数据）全部验证通过；
+# 两个跨组缺陷 D1（托盘 UI 路径崩溃，tiku-tray.ps1:129）/ D2（卸载器停进程比较错路径，tiku-setup.iss:81）
+# 使「托盘常驻启动」与「卸载器自动停服务」不成立，需 T3/T4 归属方修复。

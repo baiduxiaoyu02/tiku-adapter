@@ -1,0 +1,40 @@
+{
+  "task_type": "dev",
+  "tier": "bounded",
+  "signals": {
+    "changed_files": 7,
+    "cross_module": false,
+    "interface_or_model_change": false,
+    "irreversible": false,
+    "new_dependency": true,
+    "unfamiliar_stack": false,
+    "time_sensitive_fact": false,
+    "multiple_candidates": false,
+    "user_requested": true
+  },
+  "project": "D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter",
+  "run_dir": "D:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/.zcode/runs/20261101-windows-package",
+  "slug": "windows-package",
+  "commands": {
+    "test": "\"C:/Program Files/Go/bin/go.exe\" test ./... -run TestAPISearchAlias -count=1",
+    "lint": "",
+    "type": "",
+    "visual": "",
+    "test_timeout": 300
+  },
+  "declared_files": [
+    "internal/api/router.go",
+    "internal/api/router_alias_test.go",
+    "scripts/build-windows.ps1",
+    "web/ocs-config.json",
+    "packaging/tray/tiku-tray.ps1",
+    "packaging/tray/tiku-launcher.vbs",
+    "packaging/tiku-setup.iss",
+    "packaging/config.yaml",
+    "packaging/README.md",
+    "deploy/README.md",
+    ".gitignore"
+  ],
+  "created_at": "2026-11-01T00:00:00Z",
+  "base_sha": "51da1c43d030be260fad435e7247b9154b32a4ad"
+}

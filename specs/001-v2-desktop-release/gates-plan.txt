@@ -1,0 +1,77 @@
+{
+  "schema": 2,
+  "run_id": "fda81bea8f6e",
+  "run_dir": "D:\\user\\Zcode\\xubo\\.zcode\\workspace\\default\\tiku-adapter\\specs\\001-v2-desktop-release",
+  "tier": "full",
+  "checkpoint": "plan",
+  "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+  "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+  "artifact_hash": "sha256:7e03836e37801ad3156f7d50c33cec3c0a997ae2cf54e4e3031c200f1506751c",
+  "at": "2026-11-01T06:09:55Z",
+  "results": [
+    {
+      "gate": "tier",
+      "status": "pass",
+      "message": "declared full >= floor full",
+      "evidence": {},
+      "at": "2026-11-01T06:09:54Z",
+      "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+      "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+      "artifact_hash": "sha256:2b673000638d9e5552d78165e2c0ebe765ff14b11f90d8295f650c624a6ecb62",
+      "stale": false
+    },
+    {
+      "gate": "research_schema",
+      "status": "pass",
+      "message": "13 conclusions, 12 distinct sources",
+      "evidence": {},
+      "at": "2026-11-01T06:09:54Z",
+      "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+      "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+      "artifact_hash": "sha256:0efb4ccb00f8f3ea44db7671089d7f4b058b3c372869cca8f378ceab15634af1",
+      "stale": false
+    },
+    {
+      "gate": "research_depth",
+      "status": "pass",
+      "message": "depth=deep, sources=12",
+      "evidence": {},
+      "at": "2026-11-01T06:09:54Z",
+      "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+      "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+      "artifact_hash": "sha256:0efb4ccb00f8f3ea44db7671089d7f4b058b3c372869cca8f378ceab15634af1",
+      "stale": false
+    },
+    {
+      "gate": "spec",
+      "status": "pass",
+      "message": "9 FR items",
+      "evidence": {},
+      "at": "2026-11-01T06:09:54Z",
+      "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+      "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+      "artifact_hash": "sha256:54394c89164b39cee5e75794b45d467161e4eb289e855bddfeae9610c1138efe",
+      "stale": false
+    },
+    {
+      "gate": "design",
+      "status": "pass",
+      "message": "9 mapping rows",
+      "evidence": {},
+      "at": "2026-11-01T06:09:54Z",
+      "head_sha": "f828ffdddf4439c1e285bf45c95ccc1911ed689c",
+      "tree_sha": "sha256:8e5129f88ec0a6249358e1c9d4edf152fdecf74fc1c09c3bbe2c87f15f98b183",
+      "artifact_hash": "sha256:52673179decb7df1819d1e3fdf8d7976f2292d01435985fb1e19ae33590a027a",
+      "stale": false
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "na": 0,
+    "stale": 0,
+    "total": 5
+  }
+}

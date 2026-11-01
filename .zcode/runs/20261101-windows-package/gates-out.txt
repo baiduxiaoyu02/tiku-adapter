@@ -1,0 +1,77 @@
+{
+  "schema": 2,
+  "run_id": "e68f873b0e07",
+  "run_dir": "D:\\user\\Zcode\\xubo\\.zcode\\workspace\\default\\tiku-adapter\\.zcode\\runs\\20261101-windows-package",
+  "tier": "bounded",
+  "checkpoint": "plan",
+  "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+  "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+  "artifact_hash": "sha256:e0e26298ba4d6e353adee7861f708f3dd33b2e981878f8fb4dd4dbb5b59146ee",
+  "at": "2026-10-31T19:27:09Z",
+  "results": [
+    {
+      "gate": "tier",
+      "status": "pass",
+      "message": "declared bounded >= floor bounded",
+      "evidence": {},
+      "at": "2026-10-31T19:27:09Z",
+      "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+      "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+      "artifact_hash": "sha256:7a250ef7cba52a4a60a325b601b4f889cdc36730c83280b8aa798589925a63e8",
+      "stale": false
+    },
+    {
+      "gate": "research_schema",
+      "status": "pass",
+      "message": "6 conclusions, 7 distinct sources",
+      "evidence": {},
+      "at": "2026-10-31T19:27:09Z",
+      "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+      "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+      "artifact_hash": "sha256:724104cc4decd9833adaeb1107c72a2c4219436a231d9711b9cc67fb1c80f860",
+      "stale": false
+    },
+    {
+      "gate": "research_depth",
+      "status": "pass",
+      "message": "depth=quick, sources=7",
+      "evidence": {},
+      "at": "2026-10-31T19:27:09Z",
+      "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+      "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+      "artifact_hash": "sha256:724104cc4decd9833adaeb1107c72a2c4219436a231d9711b9cc67fb1c80f860",
+      "stale": false
+    },
+    {
+      "gate": "spec",
+      "status": "pass",
+      "message": "5 FR items",
+      "evidence": {},
+      "at": "2026-10-31T19:27:09Z",
+      "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+      "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+      "artifact_hash": "sha256:720b1d5d0b5c91b020ae420bcaab3e10020a99a02cedf3d1207ca5a643a6323f",
+      "stale": false
+    },
+    {
+      "gate": "design",
+      "status": "pass",
+      "message": "6 mapping rows",
+      "evidence": {},
+      "at": "2026-10-31T19:27:09Z",
+      "head_sha": "51da1c43d030be260fad435e7247b9154b32a4ad",
+      "tree_sha": "sha256:87526c9e68ae7e3b7c2e42a682294a7ab2423a976ebaac452a34bf01b9511320",
+      "artifact_hash": "sha256:d3f09b708d5e273410281a57dfa65b272a99c203402d19d9fec0f8d583e9cfe8",
+      "stale": false
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "na": 0,
+    "stale": 0,
+    "total": 5
+  }
+}

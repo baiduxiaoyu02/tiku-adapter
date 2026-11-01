@@ -1,0 +1,62 @@
+# tikuAdapter Windows 桌面版配置模板（FR-3，随安装包分发到安装根目录）
+# 托盘与服务从安装根目录读取本文件；data\tiku.db 为题库 SQLite 数据（卸载时保留，见安装包文档）
+
+# 数据库配置（相对安装根目录，安装后首次启动自动生成）
+database:
+  path: data/tiku.db # SQLite数据库文件路径
+
+# 限流配置
+limit:
+  enable: false # 是否开启限流
+  duration: 3   # 时间窗口为3秒
+  requests: 1   # 允许用户在3秒内通过1个请求
+
+# JWT 密钥（生产环境必须修改为随机长字符串）
+jwt_secret: "tiku-adapter-default-jwt-secret-change-me"
+
+# 服务监听地址
+# 注意：本应用按 mapstructure 规则匹配配置键，server_port 键不生效（已实测），生效键是 serverport。
+# 默认只监听本机回环——首次启动不触发 Windows 防火墙放行弹窗，OCS 在本机访问不受影响；
+# 如需局域网其他设备访问，改为 "0.0.0.0:8060" 并在防火墙放行 8060 端口。
+serverport: "127.0.0.1:8060"
+
+# 代理目标 URL（proxy 控制器使用，替代硬编码）
+proxy_target_url: ""
+
+# AI 大模型配置（题库无答案时 fallback 到大模型）
+ai:
+  enable: true
+  base_url: "http://172.24.113.2:8318/v1"
+  api_key: "sk-xxxx-change-me" # 随包模板不带真实凭据：安装后改为用户自己的 API key（真值不入 git）
+  model: "glm-5.2"
+  vision_model: "sensenova-6.8-flash-lite"  # 图片题用视觉模型（支持 text+image）
+  max_daily_calls: 0  # 每日最大调用次数，0 表示无限制
+
+# 外部题库接口（默认关闭）
+api:
+  - name: '样例接口 json 请求'
+    enable: false
+    url: http://lyck6.cn/scriptService/api/autoFreeAnswer
+    method: POST
+    headers:
+      - key: Content-Type
+        value: application/json
+    body: '{"question":"${question}"}'
+    answer: 'result.answers.0.0'
+
+  - name: '样例接口 表单请求'
+    enable: false
+    url: https://cx.icodef.com/wyn-nb?v=4
+    method: POST
+    headers:
+      - key: Content-Type
+        value: application/x-www-form-urlencoded
+    body: 'question=${question}'
+    answer: 'data'
+
+# Elasticsearch 配置（默认关闭）
+elasticsearch:
+  url: http://127.0.0.1:9200
+
+# 是否记录空答案（开启后即便没有答案也会记录在数据库方便后期手动整理题库）
+recordEmptyAnswer: false

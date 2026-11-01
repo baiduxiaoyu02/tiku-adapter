@@ -1,0 +1,88 @@
+package search
+
+import (
+	"encoding/json"
+	"github.com/go-resty/resty/v2"
+	"github.com/gookit/goutil/strutil"
+	"github.com/itihey/tikuAdapter/internal/dao"
+	"github.com/itihey/tikuAdapter/pkg/model"
+	"github.com/itihey/tikuAdapter/pkg/util"
+	"log"
+	"sort"
+	"strconv"
+)
+
+// DB mysql 或者sqlite3
+type dBSearch struct{}
+
+var defaultDBSearch = &dBSearch{}
+
+// GetDBSearch 获取DB搜索实例
+func GetDBSearch() Search {
+	return defaultDBSearch
+}
+func (in *dBSearch) getHTTPClient() *resty.Client {
+	panic("implement me")
+}
+
+// SearchAnswer 搜索答案
+func (in *dBSearch) SearchAnswer(req model.SearchRequest) (answer [][]string, err error) {
+	answer = make([][]string, 0)
+	// 将用户传递来的选项进行排序
+	sortOptions := make([]string, len(req.Options))
+	copy(sortOptions, req.Options)
+	sort.Strings(sortOptions)
+	sortOptionsStr, err1 := json.Marshal(sortOptions)
+
+	if err1 != nil {
+		sortOptionsStr = []byte("[]")
+	}
+	// 生成hash值 - 兼容新旧两种格式
+	newHash := strutil.Md5(util.FormatString(req.Question) + string(sortOptionsStr) + strconv.Itoa(req.Type) + strconv.Itoa(req.Plat))
+	oldHash := strutil.Md5(req.Question + string(sortOptionsStr) + strconv.Itoa(req.Type) + strconv.Itoa(req.Plat))
+
+	tiku := dao.Tiku
+	// 使用 OR 条件同时匹配新旧两种 hash
+	tx := tiku.Where(tiku.Hash.In(newHash, oldHash))
+
+	// 如果提供了courseName，则也匹配courseName
+	if req.CourseName != "" {
+		tx = tx.Where(tiku.CourseName.Eq(req.CourseName))
+	}
+
+	find, err := tx.Find()
+	if err != nil {
+		return nil, err
+	}
+
+	// hash 精确匹配无结果时，使用 LIKE 模糊搜索 question_text 作为 fallback
+	if len(find) == 0 {
+		formatted := util.GetQuestionText(req.Question)
+		rawDB := dao.Tiku.UnderlyingDB()
+		likePattern := "%" + formatted + "%"
+		err = rawDB.Where("question_text LIKE ? OR question LIKE ?", likePattern, "%"+req.Question+"%").
+			Limit(20).Find(&find).Error
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 如果数据库中没有extra那么自动补全他
+	if len(find) == 1 && find[0].Extra == "" {
+		_, err1 := tiku.Where(tiku.ID.Eq(find[0].ID)).Update(tiku.Extra, req.Extra)
+		if err1 != nil {
+			log.Println("更新extra失败", err1)
+		}
+	}
+	for i := range find {
+		var answers []string // 最后所有的答案的二维数组
+		err := json.Unmarshal([]byte(find[i].Answer), &answers)
+		if err != nil {
+			continue
+		}
+		if len(answers) > 0 {
+			answer = append(answer, answers)
+		}
+	}
+	return answer, nil
+}

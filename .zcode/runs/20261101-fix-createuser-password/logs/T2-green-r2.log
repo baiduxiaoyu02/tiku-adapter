@@ -1,0 +1,32 @@
+[SYS] 2026/11/01 - 13:00:03 | 无法读取配置文件: Config File "config" Not Found in "[C:\\Users\\xubo\\AppData\\Local\\Temp\\tiku-api-router-test1024479291]",将以默认配置启动 
+
+2026/11/01 13:00:03 [32mC:/Users/xubo/go/pkg/mod/github.com/glebarez/sqlite@v1.10.0/migrator.go:32
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT count(*) FROM sqlite_master WHERE type='table' AND name="tiku"
+
+2026/11/01 13:00:03 [32mD:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/internal/registry/db.go:71
+[0m[33m[1.582ms] [34;1m[rows:0][0m CREATE TABLE `tiku` (`id` integer PRIMARY KEY AUTOINCREMENT,`question` longtext NOT NULL,`type` int(11) NOT NULL,`options` longtext NOT NULL,`answer` longtext NOT NULL,`plat` int(11) NOT NULL,`hash` char(32) NOT NULL,`course_name` varchar(255),`question_text` text,`question_hash` varchar(16),`extra` text)
+
+2026/11/01 13:00:03 [32mC:/Users/xubo/go/pkg/mod/github.com/glebarez/sqlite@v1.10.0/migrator.go:268
+[0m[33m[1.070ms] [34;1m[rows:0][0m CREATE INDEX `question_hash_idx` ON `tiku`(`question_hash`)
+
+2026/11/01 13:00:03 [32mC:/Users/xubo/go/pkg/mod/github.com/glebarez/sqlite@v1.10.0/migrator.go:268
+[0m[33m[2.214ms] [34;1m[rows:0][0m CREATE UNIQUE INDEX `hash_course_idx` ON `tiku`(`hash`,`course_name`)
+
+2026/11/01 13:00:03 [32mC:/Users/xubo/go/pkg/mod/github.com/glebarez/sqlite@v1.10.0/migrator.go:32
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT count(*) FROM sqlite_master WHERE type='table' AND name="users"
+
+2026/11/01 13:00:03 [32mD:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/internal/registry/db.go:76
+[0m[33m[2.075ms] [34;1m[rows:0][0m CREATE TABLE `users` (`id` integer PRIMARY KEY AUTOINCREMENT,`username` varchar(255),`password` varchar(255),`perms` varchar(255),`parent_id` int(11),`nickname` varchar(255))
+
+2026/11/01 13:00:03 [32mC:/Users/xubo/go/pkg/mod/github.com/glebarez/sqlite@v1.10.0/migrator.go:32
+[0m[33m[0.000ms] [34;1m[rows:-][0m SELECT count(*) FROM sqlite_master WHERE type='table' AND name="logs"
+
+2026/11/01 13:00:03 [32mD:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/internal/registry/db.go:81
+[0m[33m[2.604ms] [34;1m[rows:0][0m CREATE TABLE `logs` (`id` integer PRIMARY KEY AUTOINCREMENT,`qid` int(11) NOT NULL,`old_answer` longtext NOT NULL,`new_answer` longtext NOT NULL,`user_id` int(11) NOT NULL,`create_time` datetime NOT NULL,`action` tinyint(4) NOT NULL)
+
+2026/11/01 13:00:03 [32mD:/user/Zcode/xubo/.zcode/workspace/default/tiku-adapter/internal/dao/users.gen.go:268
+[0m[33m[3.059ms] [34;1m[rows:1][0m INSERT INTO `users` (`username`,`password`,`perms`,`parent_id`,`nickname`,`id`) VALUES ("admin","$2a$10$ke3IjTgH3S4MIYzLyyMsAetimT9u15elMgMYPYgebE1E5xs2RiWHG","",0,"管理员",1) RETURNING `id`
+=== RUN   TestOcsConfigRoute
+--- PASS: TestOcsConfigRoute (0.00s)
+PASS
+ok  	github.com/itihey/tikuAdapter/internal/api	0.436s

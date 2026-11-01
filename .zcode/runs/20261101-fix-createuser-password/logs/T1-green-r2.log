@@ -1,0 +1,6 @@
+=== RUN   TestUserCreateRequest
+--- PASS: TestUserCreateRequest (0.00s)
+=== RUN   TestUserEntityNoPasswordLeak
+--- PASS: TestUserEntityNoPasswordLeak (0.00s)
+PASS
+ok  	github.com/itihey/tikuAdapter/internal/controller	0.220s

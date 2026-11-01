@@ -1,0 +1,81 @@
+命令："/c/Users/xubo/AppData/Local/Programs/Inno Setup 6/ISCC.exe" packaging/tiku-setup.iss（工作目录：项目根 tiku-adapter）
+时间：2026-11-01 04:19:01
+---- 输出 ----
+Inno Setup 6 Command-Line Compiler
+Copyright (C) 1997-2026 Jordan Russell. All rights reserved.
+Portions Copyright (C) 2000-2026 Martijn Laan. All rights reserved.
+Portions Copyright (C) 2001-2004 Alex Yackimoff. All rights reserved.
+https://www.innosetup.com
+
+Compiler engine version: Inno Setup 6.7.3
+Non-commercial use only
+
+Preprocessing
+   Reading file: C:\Users\xubo\AppData\Local\Programs\Inno Setup 6\ISPPBuiltins.iss
+Parsing [Setup] section, line 18
+Parsing [Setup] section, line 19
+Parsing [Setup] section, line 20
+Parsing [Setup] section, line 21
+Parsing [Setup] section, line 22
+Parsing [Setup] section, line 23
+Parsing [Setup] section, line 24
+Parsing [Setup] section, line 25
+Parsing [Setup] section, line 26
+Parsing [Setup] section, line 27
+Parsing [Setup] section, line 28
+Parsing [Setup] section, line 29
+Parsing [Setup] section, line 30
+Parsing [Setup] section, line 31
+Parsing [Setup] section, line 32
+Parsing [Setup] section, line 33
+Parsing [Setup] section, line 35
+Parsing [Setup] section, line 36
+Parsing [Setup] section, line 37
+Reading file (WizardImageFile)
+Reading file (WizardSmallImageFile)
+Preparing Setup program executable
+   Verification successful
+   Updating icons (Setup.e32)
+   Updating version info (Setup.e32)
+Determining language code pages
+   Reading file: C:\Users\xubo\AppData\Local\Programs\Inno Setup 6\Default.isl
+   Messages in script file
+Reading default messages from Default.isl
+Parsing [LangOptions], [Messages], and [CustomMessages] sections
+   Reading file: C:\Users\xubo\AppData\Local\Programs\Inno Setup 6\Default.isl
+   Messages in script file
+Reading [Code] section
+Parsing [Tasks] section, line 40
+Parsing [Tasks] section, line 41
+Parsing [Dirs] section, line 47
+Parsing [Icons] section, line 58
+Parsing [Icons] section, line 59
+Parsing [Icons] section, line 60
+Parsing [Registry] section, line 65
+Parsing [Run] section, line 69
+Parsing [Files] section, line 50
+Parsing [Files] section, line 51
+   Reading version info: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\config.yaml
+Parsing [Files] section, line 52
+Parsing [Files] section, line 53
+Parsing [Files] section, line 54
+Parsing [Files] section, line 55
+Compiling [Code] section
+Creating setup files
+   Verification successful
+   Updating icons (Setup.exe)
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\..\dist\tiku-adapter.exe
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\config.yaml
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\tray\tiku-tray.ps1
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\tray\tiku-launcher.vbs
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\..\web\tray\tiku.ico
+   Compressing: D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\packaging\..\web\ocs-config.json
+   Compressing Setup program executable
+   Updating version info (Setup.exe)
+   Updating manifest (Setup.exe)
+
+Warning: The [Setup] section directive "PrivilegesRequired" is set to "admin" but per-user areas (HKCU) are used by the script. Regardless of the version of Windows, if the installation is running in administrative install mode then you should be careful about making any per-user area changes: such changes may not achieve what you are intending. See the "UsedUserAreasWarning" topic in help file for more information.
+
+Successful compile (15.844 sec). Resulting Setup program filename is:
+D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\dist\tiku-adapter-setup.exe
+---- 退出码：0 ----

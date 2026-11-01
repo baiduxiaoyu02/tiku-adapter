@@ -1,0 +1,4 @@
+# github.com/itihey/tikuAdapter/internal/controller [github.com/itihey/tikuAdapter/internal/controller.test]
+internal\controller\user_test.go:13:10: undefined: userCreateRequest
+FAIL	github.com/itihey/tikuAdapter/internal/controller [build failed]
+FAIL

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>题库搜索 · GLM 5.2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:40px 20px}
+.container{max-width:700px;width:100%}
+h1{text-align:center;color:#1a1a1a;margin-bottom:8px;font-size:24px}
+.subtitle{text-align:center;color:#888;margin-bottom:30px;font-size:14px}
+.search-box{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:20px}
+textarea{width:100%;min-height:80px;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:15px;resize:vertical;outline:none;transition:border-color .2s}
+textarea:focus{border-color:#4f46e5}
+.options-row{display:flex;gap:12px;margin-top:12px}
+select,button{padding:10px 16px;border-radius:8px;font-size:14px;outline:none}
+select{border:1px solid #ddd;background:#fff;cursor:pointer}
+button{background:#4f46e5;color:#fff;border:none;cursor:pointer;flex:1;font-weight:600;transition:background .2s}
+button:hover{background:#4338ca}
+button:disabled{background:#999;cursor:not-allowed}
+.result{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.08);display:none}
+.result.show{display:block}
+.answer-key{font-size:42px;font-weight:700;color:#4f46e5;text-align:center;padding:16px 0}
+.answer-text{text-align:center;color:#555;font-size:16px;margin-bottom:16px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-right:6px}
+.tag-free{background:#dcfce7;color:#16a34a}
+.tag-ai{background:#fce7f3;color:#db2777}
+.meta{text-align:center;color:#999;font-size:12px;margin-top:12px}
+.error{color:#ef4444;text-align:center;padding:20px}
+.loading{text-align:center;color:#888;padding:20px}
+.all-answers{margin-top:12px;padding:12px;background:#f9fafb;border-radius:8px;font-size:13px;color:#666}
+.all-answers .label{font-weight:600;color:#333;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📚 题库搜索</h1>
+<p class="subtitle">免费题库 + GLM 5.2 AI fallback · localhost:8060</p>
+
+<div class="search-box">
+<textarea id="question" placeholder="输入题目内容..."></textarea>
+<div class="options-row">
+<select id="type">
+<option value="0">单选题</option>
+<option value="1">多选题</option>
+<option value="3">判断题</option>
+<option value="4">填空题</option>
+</select>
+<button id="btn" onclick="search()">搜索答案</button>
+</div>
+</div>
+
+<div class="result" id="result">
+<div class="answer-key" id="answerKey"></div>
+<div class="answer-text" id="answerText"></div>
+<div id="tags"></div>
+<div class="all-answers" id="allAnswers" style="display:none">
+<div class="label">其他来源答案</div>
+<div id="allAnswersContent"></div>
+</div>
+<div class="meta" id="meta"></div>
+</div>
+</div>
+
+<script>
+async function search(){
+const q=document.getElementById('question').value.trim();
+if(!q){alert('请输入题目');return}
+const type=parseInt(document.getElementById('type').value);
+const btn=document.getElementById('btn');
+btn.disabled=true;btn.textContent='搜索中...';
+const result=document.getElementById('result');
+result.classList.remove('show');
+result.innerHTML='<div class="loading">⏳ 正在搜索题库 + AI...</div>';
+result.classList.add('show');
+try{
+const resp=await fetch('/api/search',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({question:q,options:[],type:type})
+});
+const data=await resp.json();
+const a=data.answer||{};
+let html='';
+const key=(a.answerKey||[]).join(', ');
+const text=a.answerText||'';
+if(key||text){
+html+='<div class="answer-key">'+(key||'—')+'</div>';
+html+='<div class="answer-text">'+(text||'(无文本)')+'</div>';
+const tags=[];
+if(key)tags.push('<span class="tag tag-free">题库</span>');
+if(a.allAnswer&&a.allAnswer.length>0)tags.push('<span class="tag tag-ai">AI</span>');
+html+='<div style="text-align:center">'+tags.join('')+'</div>';
+}else{
+html+='<div class="error">❌ 未找到答案</div>';
+}
+if(a.allAnswer&&a.allAnswer.length>0){
+html+='<div class="all-answers"><div class="label">其他来源答案</div>';
+a.allAnswer.forEach(arr=>{html+='<div>'+arr.join(' / ')+'</div>'});
+html+='</div>';
+}
+html+='<div class="meta">搜索完成 · type='+type+'</div>';
+result.innerHTML=html;
+}catch(e){
+result.innerHTML='<div class="error">❌ 请求失败: '+e.message+'<br>请确认 tiku-adapter 容器正在运行</div>';
+}
+btn.disabled=false;btn.textContent='搜索答案';
+}
+document.getElementById('question').addEventListener('keydown',e=>{
+if(e.ctrlKey&&e.key==='Enter')search();
+});
+</script>
+</body>
+</html>

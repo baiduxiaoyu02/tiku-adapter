@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>devflow 运行视图 · v2-github-release</title>
+<style>
+:root { color-scheme: light dark; --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#6b7280;
+  --line:#dde1e6; --ok:#0f7b3e; --bad:#b42318; --warn:#9a6700; --accent:#2457c5; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0f1216; --card:#171b21; --ink:#e6e9ee;
+  --muted:#9aa4b2; --line:#2a3038; --ok:#5dd39e; --bad:#ff8a80; --warn:#ffd166; --accent:#8ab4ff; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font: 15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; }
+main { max-width:1080px; margin:0 auto; padding:24px 20px 64px; }
+header { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin-bottom:6px; }
+h1 { font-size:24px; margin:0; letter-spacing:-.02em; }
+h2 { font-size:17px; margin:28px 0 10px; }
+.sub { color:var(--muted); font-size:13px; }
+.cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+.card .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+.card .v { font-size:24px; font-weight:650; margin-top:2px; }
+section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px 16px 16px; margin-top:14px; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; table-layout:fixed; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere; word-break:break-word; }
+th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+tr:last-child td { border-bottom:0; }
+.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12.5px; }
+.wrap { overflow-wrap:anywhere; }
+.muted { color:var(--muted); }
+.badge { display:inline-block; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:600;
+  border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+.badge.ok { color:var(--ok); border-color:color-mix(in srgb,var(--ok) 40%,transparent); }
+.badge.bad { color:var(--bad); border-color:color-mix(in srgb,var(--bad) 40%,transparent); }
+ul { margin:8px 0 0; padding-left:20px; }
+details summary { cursor:pointer; color:var(--accent); font-size:13px; margin:8px 0; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px) {
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid2 { grid-template-columns:1fr; }
+  main { padding:18px 12px 48px; }
+}
+</style>
+</head>
+<body><main>
+<header><h1>devflow 运行视图</h1><span class="badge">full</span></header>
+<div class="sub">v2-github-release · 生成于 2026-11-01 06:10:04Z · 来源 <span class="mono">D:\user\Zcode\xubo\.zcode\workspace\default\tiku-adapter\specs\001-v2-desktop-release</span></div>
+<div class="cards">
+  <div class="card"><div class="k">任务</div><div class="v">0/7</div></div>
+  <div class="card"><div class="k">TDD 记录</div><div class="v">0</div></div>
+  <div class="card"><div class="k">未关闭 / blocker</div><div class="v">0/0</div></div>
+  <div class="card"><div class="k">门禁 pass/fail</div><div class="v">5/0</div></div>
+</div>
+
+<section><h2>规格与计划</h2>
+<div class="grid2">
+<div><h3>功能需求</h3><ul><li><b>FR-1</b> FR-1 面板支持模型供应商的增、删、改、查与「当前使用」切换；每个供应商含名称、接口地址、API 密钥、普通模型、图片视觉模型五个字段。</li><li><b>FR-2</b> FR-2 供应商配置支持连通性测试：向该供应商的模型发起一次真实请求并显示成功/失败与失败原因。</li><li><b>FR-3</b> FR-3 供应商配置持久化：保存后写入配置文件，服务重启后保留。</li><li><b>FR-4</b> FR-4 供应商配置变更后需一键重启服务生效，面板提供重启入口并在重启后自动恢复登录状态。</li><li><b>FR-5</b> FR-5 面板新建用户时密码必须入库（创建后可直接登录）；用户列表不得泄露密码哈希。</li><li><b>FR-6</b> FR-6 /ocs-config 页面按本机访问地址动态生成完整 OCS 配置（含图片题 images 字段），并提供复制按钮。</li><li><b>FR-7</b> FR-7 版本标签推送后自动构建 Windows 程序与安装包并发布 GitHub Release，Release 附使用说明。</li><li><b>FR-8</b> FR-8 公开源码仓库前，全部历史中的 API 密钥字符串必须清零（提交树与历史均不得含真 key）。</li><li><b>FR-9</b> FR-9 面板显示当前运行版本号。</li></ul></div>
+<div><h3>计划映射</h3><table><thead><tr><th>FR</th><th>任务</th><th>目标文件</th><th>验收</th></tr></thead><tbody><tr><td class='wrap'>FR-1</td><td class='wrap'>T1 CreateUser DTO 修复（TDD）</td><td class='wrap'>internal/controller/user.go</td><td class='wrap'>AC-1</td></tr><tr><td class='wrap'>FR-2</td><td class='wrap'>T2 供应商配置 API（增删改查/测试/切换）</td><td class='wrap'>internal/api/router.go + internal/controller/providers.go</td><td class='wrap'>AC-2</td></tr><tr><td class='wrap'>FR-3</td><td class='wrap'>T2 配置持久化（config.yaml 写回）</td><td class='wrap'>internal/registry/config.go</td><td class='wrap'>AC-3</td></tr><tr><td class='wrap'>FR-4</td><td class='wrap'>T3 供应商管理页面（Vue）</td><td class='wrap'>web/src/views/ProviderManage.vue + 路由注册</td><td class='wrap'>AC-3</td></tr><tr><td class='wrap'>FR-5</td><td class='wrap'>T3 重启生效入口（面板按钮）</td><td class='wrap'>web/src/views/ProviderManage.vue</td><td class='wrap'>AC-3</td></tr><tr><td class='wrap'>FR-6</td><td class='wrap'>T4 /ocs-config 页面（内嵌 HTML）</td><td class='wrap'>internal/controller/ocs_config.go + web/ocs-config-template.html</td><td class='wrap'>AC-4</td></tr><tr><td class='wrap'>FR-7</td><td class='wrap'>T5 发布流水线（.goreleaser.yaml 补打包清单 + 首个 tag）</td><td class='wrap'>.goreleaser.yaml + .github/workflows/go-releaser.yml</td><td class='wrap'>AC-4</td></tr><tr><td class='wrap'>FR-8</td><td class='wrap'>T5 历史压缩单提交</td><td class='wrap'>scripts/squash-history.ps1</td><td class='wrap'>AC-5</td></tr><tr><td class='wrap'>FR-9</td><td class='wrap'>T6 面板版本号显示</td><td class='wrap'>web/src（沿用现有布局）</td><td class='wrap'>—</td></tr></tbody></table></div>
+</div>
+<details><summary>声明改动范围（10）</summary>
+<p class="mono wrap">internal/controller/user.go, internal/controller/user_test.go, internal/controller/ocs_config.go, internal/api/router.go, internal/registry/config.go, configs/config.go, web/src/, web/ocs-config-template.html, .goreleaser.yaml, README.md</p>
+<p class="sub">测试命令：<span class="mono">&quot;C:/Program Files/Go/bin/go.exe&quot; test ./... -count=1</span></p>
+</details>
+</section>
+
+<section><h2>任务</h2>
+<table><thead><tr><th>编号</th><th>状态</th><th>任务</th><th>文件</th><th>依赖</th></tr></thead>
+<tbody><tr><td class='mono'>T1</td><td><span class="badge muted">pending</span></td><td>— /api/search 路由别名，TDD：先写 internal/api/router_alias_test.go（httptest：GET/HEAD 探活 200、POST 别名与 /adapter-service/search 同构）看 RED，加路由转 GREEN</td><td class='mono'>internal/api/router.go, internal/api/router_alias_test.go</td><td class='mono'>-</td></tr><tr><td class='mono'>T2</td><td><span class="badge muted">pending</span></td><td>— 供应商配置：Provider 结构（名称/base_url/api_key/模型/视觉模型/当前标记）进 configs.Config；API 增删改查+连通测试+当前切换（GET 列表密钥掩码）；config.yaml 持久化；TDD：providers_test.go 覆盖 Provider 结构校验与持久化往返（先红后绿）</td><td class='mono'>internal/controller/providers.go, internal/controller/providers_test.go, internal/registry/config.go, configs/config.go, internal/api/router.go</td><td class='mono'>T1</td></tr><tr><td class='mono'>T3</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 供应商管理页面（Vue）：增删改表单/连接测试按钮/当前切换/保存后提示重启生效（面板按钮触发重启接口）；验证=页面可访问且表单可用</td><td class='mono'>web/src/views/ProviderManage.vue, web/src/router 路由注册</td><td class='mono'>T2</td></tr><tr><td class='mono'>T4</td><td><span class="badge muted">pending</span></td><td>skip-tdd depends: 无 — GET /ocs-config 内嵌 HTML 页（按 location.origin 生成完整 OCS 配置 JSON + 复制按钮 + 四步导入说明 + images handler），验证=页面 200 且含 images handler 字符串</td><td class='mono'>internal/controller/ocs_config.go, web/ocs-config-template.html</td><td class='mono'>-</td></tr><tr><td class='mono'>T5</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 补 .goreleaser.yaml archives 额外文件（config 模板/托盘/ocs-config 资源）；本机构建 exe+Inno Setup 安装包；验证=构建退出码 0+压缩包含关键文件</td><td class='mono'>.goreleaser.yaml, dist/tiku-adapter-setup.exe</td><td class='mono'>T2, T4</td></tr><tr><td class='mono'>T6</td><td><span class="badge muted">pending</span></td><td>skip-tdd — 面板显示当前运行版本号（configs.Version 或构建时注入），验证=页面可见版本号</td><td class='mono'>web/src（版本号展示）</td><td class='mono'>T2</td></tr><tr><td class='mono'>T7</td><td><span class="badge muted">pending</span></td><td>skip-tdd — README 更新（安装/填 key/OCS 对接/发布流程四节），验证=README 含四节标题</td><td class='mono'>README.md</td><td class='mono'>T5, T6</td></tr></tbody></table>
+</section>
+
+<section><h2>门禁</h2>
+<table><thead><tr><th>门</th><th>状态</th><th>说明</th></tr></thead>
+<tbody><tr><td class='mono'>tier</td><td><span class="badge ok">pass</span></td><td>declared full &gt;= floor full</td></tr><tr><td class='mono'>research_schema</td><td><span class="badge ok">pass</span></td><td>13 conclusions, 12 distinct sources</td></tr><tr><td class='mono'>research_depth</td><td><span class="badge ok">pass</span></td><td>depth=deep, sources=12</td></tr><tr><td class='mono'>spec</td><td><span class="badge ok">pass</span></td><td>9 FR items</td></tr><tr><td class='mono'>design</td><td><span class="badge ok">pass</span></td><td>9 mapping rows</td></tr></tbody></table>
+</section>
+
+<section><h2>审查问题</h2>
+<table><thead><tr><th>编号</th><th>级别</th><th>状态</th><th>复现</th><th>证据</th></tr></thead>
+<tbody><tr><td colspan='5' class='muted'>review.json 没有问题</td></tr></tbody></table>
+</section>
+
+<section><h2>交付</h2>
+<p>阶段 <span class="badge muted">未交付</span> 
+</p>
+<p class="sub">⑦ 尚未执行或尚未写入 ship.json。</p>
+</section>
+</main></body></html>

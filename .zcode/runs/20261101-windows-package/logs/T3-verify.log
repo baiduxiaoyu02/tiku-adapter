@@ -1,0 +1,9 @@
+# T3 验证（skip-tdd）：托盘脚本启动 exe 且探活 200 — 2026-11-01 04:12:39
+# 布局：临时 staging 安装根 = tiku-adapter.exe(dist 产物) + config.yaml(packaging/config.yaml 副本) + tray/tiku-tray.ps1
+# 8060 被现有 Docker 部署占用（wslrelay PID 38352，二者互斥），staging 副本将 serverport 改为 127.0.0.1:18060
+# 命令：powershell -NoProfile -ExecutionPolicy Bypass -File <stage>\tray\tiku-tray.ps1 -SmokeTest
+---
+[tiku-tray] ��װ����C:\Users\xubo\AppData\Local\Temp\tiku-tray-stage-oy0l | �˿ڣ�18060
+[tiku-tray] SMOKE OK��exe ��������GET /api/search -> 200
+[tiku-tray] ��֤������ֹͣ
+EXIT=0

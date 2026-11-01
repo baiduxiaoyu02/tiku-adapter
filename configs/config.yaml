@@ -1,0 +1,47 @@
+limit:
+  enable: false # 是否开启
+  duration: 3  # 时间窗口为3秒
+  requests: 1  # 允许用户在3秒内通过1个请求
+mysql: ""
+database:
+  path: data/tiku.db # SQLite数据库文件路径，Docker部署建议设置为 data/tiku.db
+
+# JWT 密钥（生产环境必须修改为随机长字符串）
+jwt_secret: "tiku-adapter-default-jwt-secret-change-me"
+
+# 服务端口（默认 0.0.0.0:8060）
+server_port: "0.0.0.0:8060"
+
+# 代理目标 URL（proxy 控制器使用，替代硬编码）
+proxy_target_url: ""
+
+ai:
+  enable: false       # 是否启用 AI fallback
+  base_url: ""        # 大模型 API 基础地址，如 https://api.openai.com/v1
+  api_key: ""         # 大模型 API Key
+  model: ""           # 模型名称，如 gpt-4o-mini
+  max_daily_calls: 0  # 每日最大调用次数，0 表示无限制
+
+api:
+  - name: '样例接口 json 请求'
+    enable: false
+    url: http://lyck6.cn/scriptService/api/autoFreeAnswer
+    method: POST
+    headers:
+      - key: Content-Type
+        value: application/json
+    body: '{"question":"${question}"}'
+    answer: 'result.answers.0.0'
+
+  - name: '样例接口 表单请求'
+    enable: false
+    url: https://cx.icodef.com/wyn-nb?v=4
+    method: POST
+    headers:
+      - key: Content-Type
+        value: application/x-www-form-urlencoded
+    body: 'question=${question}'
+    answer: 'data'
+elasticsearch:
+  url: http://127.0.0.1:9200
+recordEmptyAnswer: false # 是否记录空答案（开启之后即便没有答案也会记录在数据库方便后期手动整理题库）

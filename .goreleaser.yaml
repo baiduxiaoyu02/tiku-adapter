@@ -1,0 +1,62 @@
+project_name: tikuAdapter
+before:
+  hooks:
+    - sh buildweb.sh
+builds:
+  - main: ./cmd/adapter-service
+    # https://go.dev/doc/install/source#environment
+    ignore:
+      - goos: darwin
+        goarch: arm
+      - goos: darwin
+        goarch: '386'
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: '386'
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - '386'
+      - arm
+    ldflags: "-s -w -extldflags '-static'"
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+checksum:
+  name_template: checksums.txt
+changelog:
+  sort: desc
+  filters:
+    exclude:
+      - '^ci:'
+      - '^CI:'
+
+# 附加文件：配置模板 + 托盘 + OCS 配置生成页数据（朋友解压即得完整目录）
+archives:
+  - formats: ['tar.gz']
+    format_overrides:
+      - goos: windows
+        formats: ['zip']
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - source: README.md
+      - source: packaging/config.yaml
+        destination: config.yaml
+        strip_parent: true
+      - source: web/tray/tiku.ico
+        destination: tray/tiku.ico
+        strip_parent: true
+      - source: web/tray/tiku-tray.ps1
+        destination: tray/tiku-tray.ps1
+        strip_parent: true
+      - source: web/tray/tiku-launcher.vbs
+        destination: tray/tiku-launcher.vbs
+        strip_parent: true
+      - source: web/ocs-config.json
+        destination: ocs-config.json
+        strip_parent: true

@@ -1,0 +1,4 @@
+COMMAND: go test ./internal/api/ -run TestOcsConfigRoute -count=1
+EXIT_CODE: 0
+----
+ok  	github.com/itihey/tikuAdapter/internal/api	1.769s

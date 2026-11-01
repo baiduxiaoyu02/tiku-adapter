@@ -1,0 +1,43 @@
+T3 rebuild/deploy verification log (2026-11-01)
+
+BUILD
+COMMAND: powershell -ExecutionPolicy Bypass -File scripts/build-windows.ps1 -SmokeBind "127.0.0.1:18060"
+EXIT_CODE: 0
+OUTPUT (tail):
+  [1/4] go1.21.13 | GOTOOLCHAIN=go1.21.13 | CGO_ENABLED=0
+  [2/4] reuse existing frontend: cmd/adapter-service/dist
+  [3/4] go build -> dist/tiku-adapter.exe (35.1 MB)
+  [4/4] smoke OK: PID 29016 listen 127.0.0.1:18060 | GET /api/search -> 200 | GET / -> 200
+(8060 occupied by the deployed instance during build; build smoke ran on free port 18060)
+
+COMMAND: "C:/Users/xubo/AppData/Local/Programs/Inno Setup 6/ISCC.exe" packaging/tiku-setup.iss
+EXIT_CODE: 0
+OUTPUT: Successful compile (7.719 sec) -> dist/tiku-adapter-setup.exe
+  (only pre-existing warning: PrivilegesRequired=admin + HKCU autostart task)
+ARTIFACTS: dist/tiku-adapter.exe 36756992 bytes; dist/tiku-adapter-setup.exe 10484460 bytes (both Nov 1 12:39)
+
+DEPLOY (logs/T3-deploy.ps1, ASCII-only after PS5.1 misread UTF-8-no-BOM Chinese comments)
+EXIT_CODE: 0
+OUTPUT:
+  [deploy] stop old service PID 52628
+  [deploy] dist    SHA256: 1376117FAA42AE02EB354A7F00FE59382669E7E0788A21158BDAC67975B9A8B2
+  [deploy] deployed SHA256: 1376117FAA42AE02EB354A7F00FE59382669E7E0788A21158BDAC67975B9A8B2
+  [deploy] OK: probe 200, new service PID 60408
+
+VERIFY (all commands run against deployed instance http://127.0.0.1:8060 after restart)
+1. probe:  curl --noproxy '*' -s -o /dev/null -w "%{http_code}" --max-time 8 http://127.0.0.1:8060/api/search
+   -> HTTP 200
+2. search: curl --noproxy '*' -s --max-time 120 -X POST http://127.0.0.1:8060/api/search
+           -H "Content-Type: application/json"
+           -d '{"question":"中国的国土面积大约是多少万平方公里","type":2}'
+   -> {"plat":0,...,"type":2,"answer":{"answerText":"960","bestAnswer":["960"],
+       "allAnswer":[["960"],["爱因斯坦"]]}}
+   bestAnswer=960 -> correct for the question (Chinese text garbled only in Git Bash console
+   display; answer content correct). Local DB was empty -> answer came via AI fallback path.
+3. ocs-config: curl --noproxy '*' -s -o page.html -w "%{http_code}" http://127.0.0.1:8060/ocs-config
+   -> HTTP 200; page title "OCS 题库配置生成"; grep -c "images" -> 3 (images handler present)
+
+STATE AFTER DEPLOY
+- service: PID 60408, ExecutablePath D:\user\ruanjian\TikuAdapter\tiku-adapter.exe (new exe)
+- tray: original tray PID 48652 kept running, untouched
+- deployed exe SHA256 == dist exe SHA256: 1376117F...B9A8B2
